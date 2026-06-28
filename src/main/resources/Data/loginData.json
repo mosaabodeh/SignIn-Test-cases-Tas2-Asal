@@ -1,0 +1,14 @@
+{
+  "validLoginScenario": {
+    "username": "mosaab.cb@gmail.com",
+    "password": "Mosaab_cb0595"
+  },
+  "invalidLoginScenario": {
+    "username": "wrong.user@example.com",
+    "password": "BadPassword!",
+    "expectedErrorMessage": "Incorrect username or password"
+  },"emptyFieldsScenario" :{
+  "username": "",
+  "expectedErrorMessage" : "Login or password is missing"
+}
+}

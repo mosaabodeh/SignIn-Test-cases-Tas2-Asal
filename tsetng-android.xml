@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Mobile Android Login Test Suite">
+
+    <listeners>
+        <listener class-name="utils.TestListener"/>
+    </listeners>
+
+    <test name="Mobile Android Application Authentication Tests">
+        <parameter name="platform" value="android"/>
+        <classes>
+            <class name="tests.LoginMobileTest"/>
+        </classes>
+    </test>
+
+</suite>
