@@ -1,7 +1,6 @@
-package pages.mobile;
+package pages;
 
 import org.openqa.selenium.WebDriver;
-import pages.BasePage;
 import pages.locators.ElementKey;
 
 

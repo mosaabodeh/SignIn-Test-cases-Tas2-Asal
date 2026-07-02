@@ -5,7 +5,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import pages.base.BaseLoginPage;
-import pages.mobile.DashboardPage;
+import pages.DashboardPage;
 import pages.web.WebLoginPage;
 import pages.mobile.MobileLoginPage;
 import utils.JsonReader;
@@ -72,28 +72,21 @@ public class LoginAutomationTest extends BaseTest {
     }
 
     @Test(priority = 1, description = "Verify that a user can log in successfully with valid credentials")
-    public void testSuccessfulLoginHappyPath()  {
+    public void testSuccessfulLoginHappyPath() {
+
         String validUser = JsonReader.getTestData(LOGIN_DATA_FILE, "validLoginScenario", "username");
         String validPass = JsonReader.getTestData(LOGIN_DATA_FILE, "validLoginScenario", "password");
 
-        loginScenario(validUser,validPass);
+        loginScenario(validUser, validPass);
 
-        if(Objects.equals(platform, "web")){
-            WebLoginPage webLoginPage = new WebLoginPage(getDriver());
+        DashboardPage dashboardPage = new DashboardPage(getDriver());
 
-            Assert.assertTrue(  webLoginPage.verifyUserNameThatLoggedIn("Mosaab m","odeh"),
-                    "❌ Failsafe: Logged-in user name mismatch on Web platform.");
-            webLoginPage.logOut();
-        }
-        else {
-            DashboardPage mobileLoginPage = new DashboardPage(getDriver());
-            MobileLoginPage mobileLogoutPage = new MobileLoginPage(getDriver());
+        Assert.assertTrue(
+                dashboardPage.verifyUserNameThatLoggedIn("Mosaab m", "odeh"),
+                "❌ User name mismatch after login"
+        );
 
-            Assert.assertTrue(mobileLoginPage.verifyUserNameThatLoggedIn("Mosaab m", "odeh"),
-                    "❌ Failsafe: Logged-in user name mismatch on Mobile platform.");
-
-            mobileLogoutPage.logOut();
-        }
+        logout();
     }
 
     @Test(priority = 2, description = "Verify that invalid credentials yield appropriate system validation error reactions")

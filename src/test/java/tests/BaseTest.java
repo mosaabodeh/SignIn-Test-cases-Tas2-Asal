@@ -10,6 +10,8 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
+import pages.LogoutPage;
+import pages.web.WebLoginPage;
 import utils.AppConfig;
 import utils.ConfigReader;
 
@@ -98,7 +100,10 @@ public abstract class BaseTest {
             }
         }
     }
+    protected void logout() {
+        new LogoutPage(getDriver()).logOut();
 
+    }
     @AfterMethod(alwaysRun = true)
     public void tearDownAfterMethod(ITestResult result) {
         if (ITestResult.FAILURE == result.getStatus()) {
