@@ -73,9 +73,21 @@ public class LoginAutomationTest extends BaseTest {
         loginPage.enterPassword(validPass);
         loginPage.clickLogin();
 
-  Assert.assertTrue( loginPage.verifyUserNameThatLoggedIn("Mosaab m","odeh"),
+        if(Objects.equals(platform, "web")){
+            WebLoginPage webLoginPage = new WebLoginPage(getDriver());
+
+            Assert.assertTrue(  webLoginPage.verifyUserNameThatLoggedIn("Mosaab m","odeh"),
                     "❌ Failsafe: Logged-in user name mismatch on Web platform.");
-            loginPage.logOut();
+            webLoginPage.logOut();
+        }
+        else {
+            MobileLoginPage mobileLoginPage = new MobileLoginPage(getDriver());
+
+            Assert.assertTrue(mobileLoginPage.verifyUserNameThatLoggedIn("Mosaab m", "odeh"),
+                    "❌ Failsafe: Logged-in user name mismatch on Mobile platform.");
+
+            mobileLoginPage.logOut();
+        }
     }
 
     @Test(priority = 2, description = "Verify that invalid credentials yield appropriate system validation error reactions")
@@ -94,7 +106,7 @@ public class LoginAutomationTest extends BaseTest {
 
         boolean isValidationTriggered = Stream.of(expectedError,"enter", "valid", "incorrect", "password", "identifier", "rainbow login")
                 .anyMatch(actualError::contains);
-
+        System.out.println("The Actual Error Is : "+actualError);
         Assert.assertTrue(isValidationTriggered,
                 "❌ Failsafe: Expected error prompt was not registered by the execution interface. Scraped text: " + actualError);
 

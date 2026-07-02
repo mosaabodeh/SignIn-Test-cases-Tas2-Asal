@@ -1,0 +1,18 @@
+package pages.web.locators;
+
+public enum ElementKey {
+
+    EMAIL_FIELD,
+    PASSWORD_FIELD,
+    CONTINUE_BUTTON,
+    LOGIN_BUTTON,
+    NEWS_DASHBOARD,
+
+    NAVIGATION_SETTINGS,
+    MY_PROFILE_BUTTON,
+    NAVIGATION_BACK,
+    LOGOUT_BUTTON,
+    LOGOUT_CONFIRM,
+
+
+}

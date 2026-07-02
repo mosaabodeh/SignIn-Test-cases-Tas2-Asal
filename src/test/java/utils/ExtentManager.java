@@ -50,7 +50,4 @@ public class ExtentManager {
         testThreadLocal.set(test);
     }
 
-    public static void clearTest() {
-        testThreadLocal.remove();
-    }
 }

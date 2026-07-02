@@ -7,7 +7,7 @@ public interface BaseLoginPage {
     boolean isDashboardDisplayed();
     String getErrorMessage();
     void clickContinue();
-    void logOut();
-    boolean verifyUserNameThatLoggedIn(String firstName,String lastName);
+    //Delete the logout, Verify name
+
 
 }

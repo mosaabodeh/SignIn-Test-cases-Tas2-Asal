@@ -1,78 +1,79 @@
 package pages.mobile;
-
+import io.appium.java_client.android.AndroidDriver;
 import org.openqa.selenium.WebDriver;
 import pages.BasePage;
-import pages.ElementsPage;
 import pages.base.BaseLoginPage;
+import pages.web.locators.ElementKey;
 
-public class MobileLoginPage extends BasePage implements BaseLoginPage  {
+public class MobileLoginPage extends BasePage implements BaseLoginPage {
 
     public MobileLoginPage(WebDriver driver) {
-        super( driver);
-        this.driver = driver;
+        super(driver);
     }
-
     @Override
     public void enterUsername(String username) {
-        org.openqa.selenium.WebElement emailField = waitForVisibility(ElementsPage.EMAIL_FIELD);
-
-        emailField.clear();
-
-        emailField.sendKeys(username);
+        type(locator(ElementKey.EMAIL_FIELD), username);
     }
 
     @Override
     public void enterPassword(String password) {
-        waitForVisibility( ElementsPage.PASSWORD_FIELD).sendKeys(password);
+        type(locator(ElementKey.PASSWORD_FIELD), password);
     }
+
     @Override
     public void clickContinue() {
-        waitForClickability( ElementsPage.CONTINUE_BUTTON).click();
-    }
-
-    @Override
-    public void logOut(){
-        waitForClickability(ElementsPage.NAVIGATION_BACK).click();
-        waitForClickability(ElementsPage.NAVIGATION_SETTINGS).click();
-        waitForClickability(ElementsPage.LOGOUT_BUTTON).click();
-        waitForClickability(ElementsPage.LOGOUT_CONFIRM).click();
-
-    }
-    @Override
-    public boolean verifyUserNameThatLoggedIn(String firstName, String lastName) {
-        waitForClickability(ElementsPage.NAVIGATION_SETTINGS).click();
-        waitForClickability(ElementsPage.MY_PROFILE_BUTTON).click();
-
-        String realFirstName= ElementsPage.verifyName(firstName);
-        String realLastName= ElementsPage.verifyName(lastName);
-        System.out.println("The User Firest name is : "+realFirstName+ "   And the last name is : "+realLastName);
-
-        return firstName.equalsIgnoreCase(realFirstName) && (lastName.equalsIgnoreCase(realLastName));
+        click(locator(ElementKey.CONTINUE_BUTTON));
     }
 
     @Override
     public void clickLogin() {
-        waitForClickability( ElementsPage.LOGIN_BUTTON).click();
+        click(locator(ElementKey.LOGIN_BUTTON));
     }
 
     @Override
     public boolean isDashboardDisplayed() {
-        return waitForVisibility( ElementsPage.NEWS).isDisplayed();
+        return isDisplayed(locator(ElementKey.NEWS_DASHBOARD));
+    }
+
+    public void logOut() {
+        click(locator(ElementKey.NAVIGATION_BACK));
+        click(locator(ElementKey.NAVIGATION_SETTINGS));
+        click(locator(ElementKey.LOGOUT_BUTTON));
+        click(locator(ElementKey.LOGOUT_CONFIRM));
+    }
+
+    public boolean verifyUserNameThatLoggedIn(String firstName, String lastName) {
+
+        click(locator(ElementKey.NAVIGATION_SETTINGS));
+        click(locator(ElementKey.MY_PROFILE_BUTTON));
+
+        String realFirstName = verifyName(firstName);
+        String realLastName =  verifyName(lastName);
+
+        System.out.println(
+                "The User First name is : "+ realFirstName+ " And the last name is : "+ realLastName);
+
+        return firstName.equalsIgnoreCase(realFirstName)&& lastName.equalsIgnoreCase(realLastName);
     }
 
     @Override
     public String getErrorMessage() {
-        System.out.println("📱 Platform is Mobile. Dismissing keyboard and triggering OCR Toast Scraper...");
+
         try {
-            io.appium.java_client.android.AndroidDriver mobileDriver = (io.appium.java_client.android.AndroidDriver) driver;
-            if (mobileDriver.isKeyboardShown()) {
-                mobileDriver.hideKeyboard();
+            if (driver instanceof AndroidDriver mobileDriver) {
+                if (mobileDriver.isKeyboardShown()) {
+                    mobileDriver.hideKeyboard();
+                }
+                String toastText =utils.ToastOcrHandler.captureAndReadToast(mobileDriver);
+                return toastText == null ? "": toastText.replaceAll("\\s+", " ").trim();
             }
-            String toastText = utils.ToastOcrHandler.captureAndReadToast(mobileDriver);
-            return (toastText != null) ? toastText.replaceAll("\\s+", " ").trim() : "";
-        } catch (Exception e) {
-            System.out.println("⚠️ Mobile view handling or OCR issue: " + e.getMessage());
             return "";
+
+        } catch (Exception e) {
+
+            System.out.println("⚠️ Mobile OCR error: " + e.getMessage());
+            return "";
+
         }
     }
 }

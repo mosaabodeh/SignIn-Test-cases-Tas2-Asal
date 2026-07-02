@@ -56,8 +56,9 @@ public class LoginMobileTest extends BaseTest {
 
         Assert.assertTrue(loginPage.isDashboardDisplayed(),
                 "Failsafe: Dashboard landing page failed to mount post-authentication.");
-        Assert.assertTrue( loginPage.verifyUserNameThatLoggedIn("Mosaab m", "odeh"),
-                "Failsafe: The User name Dosnt Mach With The Same User Loge din Account, failed to mount post-authentication.");
+
+        Assert.assertTrue(((MobileLoginPage) loginPage).verifyUserNameThatLoggedIn("Mosaab m", "odeh"),
+                "Failsafe: The User name Dosnt Mach With The Same User Loged in Account, failed to mount post-authentication.");
         ((MobileLoginPage) loginPage).logOut();
     }
 

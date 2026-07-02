@@ -84,7 +84,6 @@ public class WebLoginPage extends BasePage implements BaseLoginPage {
             return false;
         }
     }
-    @Override
     public boolean verifyUserNameThatLoggedIn(String firstName, String lastName) {
 
         System.out.println("⏳ Layer Sync [1/3]: Clicking profile avatar menu custom element...");
@@ -112,31 +111,7 @@ public class WebLoginPage extends BasePage implements BaseLoginPage {
         return realFullName.equalsIgnoreCase(expectedFullName);
     }
 
-    private void waitForButtons(By buttonContainer, By buttonText, int timeoutInSeconds) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutInSeconds));
-        WebElement containerElement = wait.until(ExpectedConditions.visibilityOfElementLocated(buttonContainer));
 
-        wait.until(driverInstance -> {
-            WebElement element = driverInstance.findElement(buttonContainer);
-            String ariaDisabled = element.getAttribute("aria-disabled");
-            return "false".equals(ariaDisabled) || ariaDisabled == null;
-        });
-        wait.until(ExpectedConditions.elementToBeClickable(buttonContainer));
-        try {
-            containerElement.click();
-            System.out.println("✅ Primary action button container click complete.");
-        } catch (Exception e) {
-            System.out.println("⚠️ Interaction intercepted by layout overlay. Falling back to JavaScript engine click wrapper...");
-            JavascriptExecutor js = (JavascriptExecutor) driver;
-            js.executeScript("arguments[0].click();", containerElement);
-        }
-    }
-
-    public WebElement waitForElement(By locator, int timeoutInSeconds) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutInSeconds));
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-    }
-@Override
 public void logOut() {
     clickElementSafely(ElementsPage.profileMenuAvatar, 5);
     System.out.println("🎯 LogOut Flow: Avatar container element clicked.");
