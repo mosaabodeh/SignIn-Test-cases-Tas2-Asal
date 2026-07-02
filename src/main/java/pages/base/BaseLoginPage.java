@@ -4,10 +4,10 @@ public interface BaseLoginPage {
     void enterUsername(String username);
     void enterPassword(String password);
     void clickLogin();
-    boolean isDashboardDisplayed();
+   // boolean isDashboardDisplayed();
     String getErrorMessage();
     void clickContinue();
-    boolean verifyUserNameThatLoggedIn(String firstName, String lastName);
+    //boolean verifyUserNameThatLoggedIn(String firstName, String lastName);
     //Delete the logout
 
 

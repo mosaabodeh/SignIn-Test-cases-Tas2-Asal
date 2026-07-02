@@ -4,7 +4,7 @@ import org.openqa.selenium.WebDriver;
 import pages.BasePage;
 import pages.base.BaseLoginPage;
 import pages.base.BaseLogoutPage;
-import pages.web.locators.ElementKey;
+import pages.locators.ElementKey;
 
 public class MobileLoginPage extends BasePage implements BaseLoginPage , BaseLogoutPage {
 
@@ -31,10 +31,7 @@ public class MobileLoginPage extends BasePage implements BaseLoginPage , BaseLog
         click(locator(ElementKey.LOGIN_BUTTON));
     }
 
-    @Override
-    public boolean isDashboardDisplayed() {
-        return isDisplayed(locator(ElementKey.NEWS_DASHBOARD));
-    }
+
     @Override
     public void logOut() {
         click(locator(ElementKey.NAVIGATION_BACK));
@@ -42,20 +39,7 @@ public class MobileLoginPage extends BasePage implements BaseLoginPage , BaseLog
         click(locator(ElementKey.LOGOUT_BUTTON));
         click(locator(ElementKey.LOGOUT_CONFIRM));
     }
-    @Override
-    public boolean verifyUserNameThatLoggedIn(String firstName, String lastName) {
 
-        click(locator(ElementKey.NAVIGATION_SETTINGS));
-        click(locator(ElementKey.MY_PROFILE_BUTTON));
-
-        String realFirstName = verifyName(firstName);
-        String realLastName =  verifyName(lastName);
-
-        System.out.println(
-                "The User First name is : "+ realFirstName+ " And the last name is : "+ realLastName);
-
-        return firstName.equalsIgnoreCase(realFirstName)&& lastName.equalsIgnoreCase(realLastName);
-    }
 
     @Override
     public String getErrorMessage() {

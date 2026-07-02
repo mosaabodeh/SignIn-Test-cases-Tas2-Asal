@@ -6,8 +6,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import pages.web.locators.ElementKey;
-import pages.web.locators.ElementRegistry;
+import pages.locators.ElementKey;
+import pages.locators.ElementRegistry;
 import utils.ConfigReader;
 
 import java.time.Duration;

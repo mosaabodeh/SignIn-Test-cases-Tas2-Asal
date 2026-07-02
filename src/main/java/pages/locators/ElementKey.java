@@ -1,4 +1,4 @@
-package pages.web.locators;
+package pages.locators;
 
 public enum ElementKey {
 

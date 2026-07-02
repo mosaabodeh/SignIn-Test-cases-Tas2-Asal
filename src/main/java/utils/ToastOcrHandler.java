@@ -14,20 +14,16 @@ public class ToastOcrHandler {
     public static String captureAndReadToast(AppiumDriver driver) {
         Tesseract tesseract = new Tesseract();
 
-        // 1. Get the base project directory
         String projectRoot = System.getProperty("user.dir");
 
-        // 2. Explicitly build a clean Windows path using File.separator
         String tessdataPath = projectRoot + File.separator + "src"
                 + File.separator + "test"
                 + File.separator + "resources"
                 + File.separator + "tessdata";
 
-        // 3. Set the clean folder path
         tesseract.setDatapath(tessdataPath);
         tesseract.setLanguage("eng");
 
-        // Set up clean paths for saving the target screenshot
         File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
         File destinationFile = new File(projectRoot + File.separator + "target" + File.separator + "toast_screenshot.png");
 

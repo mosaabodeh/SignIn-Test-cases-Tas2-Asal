@@ -10,6 +10,7 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
+import utils.AppConfig;
 import utils.ConfigReader;
 
 import java.io.File;
@@ -23,7 +24,6 @@ public abstract class BaseTest {
     protected String platform;
 
     private static final String DEFAULT_STANDALONE_PLATFORM = "android";
-    private static final String DEFAULT_FALLBACK_URL = "https://web.openrainbow.net/app/en-us/login";
 
     public WebDriver getDriver() {
         return DriverFactory.getDriver();
@@ -38,7 +38,6 @@ public abstract class BaseTest {
                     .withArgument(() -> "--allow-cors");
             appiumServer = AppiumDriverLocalService.buildService(builder);
             appiumServer.start();
-            System.out.println(">>> Appium Node Server running isolated socket locally <<<");
         } catch (Exception e) {
             System.out.println("ℹ️ Node orchestration server context skipped or already hosted.");
         }
@@ -51,7 +50,6 @@ public abstract class BaseTest {
                       @Optional("8201") String systemPort) {
 
         final String runningClassName = this.getClass().getSimpleName();
-        System.out.println("🚀 [Auto-Detect] Context Target Class Evaluated: " + runningClassName);
 
         if ("auto".equalsIgnoreCase(targetPlatform)) {
             final String lowercaseClassName = runningClassName.toLowerCase();
@@ -65,10 +63,8 @@ public abstract class BaseTest {
                 this.platform = DEFAULT_STANDALONE_PLATFORM;
                 targetEnv = "web".equals(this.platform) ? "web_env" : "realdevice";
             }
-            System.out.println("🎯 [Auto-Detect] Local Standalone Active! Context Platform forced: " + this.platform);
         } else {
             this.platform = targetPlatform.toLowerCase().trim();
-            System.out.println("📋 [XML Config] Distributed Grid Executed! Platform Target resolved: " + this.platform);
         }
 
         if ("web".equals(this.platform) && "auto".equalsIgnoreCase(targetEnv)) {
@@ -81,8 +77,7 @@ public abstract class BaseTest {
         DriverFactory.initDriver(this.platform);
 
         if ("web".equalsIgnoreCase(this.platform)) {
-            final String webUrl = ConfigReader.getProperty("web.url");
-            getDriver().get(webUrl != null ? webUrl : DEFAULT_FALLBACK_URL);
+            getDriver().get(AppConfig.getWebUrl());
         }
     }
 
@@ -93,15 +88,13 @@ public abstract class BaseTest {
             return;
         }
 
-        final String appPackage = ConfigReader.getPropertyOrDefault("app.package", "com.ale.rainbow");
-
         if (currentDriver instanceof InteractsWithApps mobileAppEngine) {
             try {
+                String appPackage = AppConfig.getAppPackage();
                 mobileAppEngine.terminateApp(appPackage);
                 mobileAppEngine.activateApp(appPackage);
-                System.out.println("🔄 Mobile package isolated lifecycle recycled cleanly.");
             } catch (Exception e) {
-                System.out.println("⚠️ App state optimization hook was rejected by Appium session context: " + e.getMessage());
+                System.out.println("⚠️ App state optimization hook skipped: " + e.getMessage());
             }
         }
     }
@@ -111,7 +104,6 @@ public abstract class BaseTest {
         if (ITestResult.FAILURE == result.getStatus()) {
             takeScreenshot(result.getName());
         }
-        System.out.println("🔄 >>> Thread Execution Method Step Completed Context.");
     }
 
     @AfterClass(alwaysRun = true)
@@ -123,7 +115,6 @@ public abstract class BaseTest {
     public void stopAppiumServer() {
         if (appiumServer != null && appiumServer.isRunning()) {
             appiumServer.stop();
-            System.out.println(">>> Appium Node Process detached cleanly from local stack <<<");
         }
     }
 
@@ -139,9 +130,8 @@ public abstract class BaseTest {
                     System.getProperty("user.dir"), File.separator, File.separator, testName, timestamp);
 
             FileUtils.copyFile(srcFile, new File(filePath));
-            System.out.println("❌ Verification Engine Fault! State Context saved directly to: " + filePath);
         } catch (Exception e) {
-            System.out.println("⚠️ Frame capture routine encountered an error mapping system I/O stream.");
+            System.out.println("⚠️ Frame capture routine encountered an I/O system error.");
         }
     }
 }

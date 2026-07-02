@@ -5,6 +5,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import pages.base.BaseLoginPage;
+import pages.mobile.DashboardPage;
 import pages.web.WebLoginPage;
 import pages.mobile.MobileLoginPage;
 import utils.JsonReader;
@@ -85,12 +86,13 @@ public class LoginAutomationTest extends BaseTest {
             webLoginPage.logOut();
         }
         else {
-            MobileLoginPage mobileLoginPage = new MobileLoginPage(getDriver());
+            DashboardPage mobileLoginPage = new DashboardPage(getDriver());
+            MobileLoginPage mobileLogoutPage = new MobileLoginPage(getDriver());
 
             Assert.assertTrue(mobileLoginPage.verifyUserNameThatLoggedIn("Mosaab m", "odeh"),
                     "❌ Failsafe: Logged-in user name mismatch on Mobile platform.");
 
-            mobileLoginPage.logOut();
+            mobileLogoutPage.logOut();
         }
     }
 

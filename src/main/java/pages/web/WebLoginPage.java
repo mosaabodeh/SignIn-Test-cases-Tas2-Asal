@@ -35,7 +35,6 @@ public class WebLoginPage extends BasePage implements BaseLoginPage , BaseLogout
         waitForButtons(ElementsPage.loginButtonContainer, ElementsPage.loginButtonText, 3);
     }
 
-    @Override
     public boolean isDashboardDisplayed() {
         try {
             WebElement element = waitForElement(ElementsPage.newsFeedButton, 20);
@@ -81,7 +80,7 @@ public class WebLoginPage extends BasePage implements BaseLoginPage , BaseLogout
             return false;
         }
     }
-    @Override
+
     public boolean verifyUserNameThatLoggedIn(String firstName, String lastName) {
 
         System.out.println("⏳ Layer Sync [1/3]: Clicking profile avatar menu custom element...");
