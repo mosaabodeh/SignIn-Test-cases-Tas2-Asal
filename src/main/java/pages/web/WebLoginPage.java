@@ -1,17 +1,14 @@
 package pages.web;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.BasePage;
 import pages.ElementsPage;
 import pages.base.BaseLoginPage;
-import java.time.Duration;
+import pages.base.BaseLogoutPage;
 
-public class WebLoginPage extends BasePage implements BaseLoginPage {
+public class WebLoginPage extends BasePage implements BaseLoginPage , BaseLogoutPage {
     private final WebDriver driver;
 
     public WebLoginPage(WebDriver driver) {
@@ -84,6 +81,7 @@ public class WebLoginPage extends BasePage implements BaseLoginPage {
             return false;
         }
     }
+    @Override
     public boolean verifyUserNameThatLoggedIn(String firstName, String lastName) {
 
         System.out.println("⏳ Layer Sync [1/3]: Clicking profile avatar menu custom element...");
@@ -111,7 +109,7 @@ public class WebLoginPage extends BasePage implements BaseLoginPage {
         return realFullName.equalsIgnoreCase(expectedFullName);
     }
 
-
+@Override
 public void logOut() {
     clickElementSafely(ElementsPage.profileMenuAvatar, 5);
     System.out.println("🎯 LogOut Flow: Avatar container element clicked.");

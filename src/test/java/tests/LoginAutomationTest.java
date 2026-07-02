@@ -63,15 +63,19 @@ public class LoginAutomationTest extends BaseTest {
         }
     }
 
+    void loginScenario(String validUser, String pass ){
+        loginPage.enterUsername(validUser);
+        loginPage.clickContinue();
+        loginPage.enterPassword(pass);
+        loginPage.clickLogin();
+    }
+
     @Test(priority = 1, description = "Verify that a user can log in successfully with valid credentials")
     public void testSuccessfulLoginHappyPath()  {
         String validUser = JsonReader.getTestData(LOGIN_DATA_FILE, "validLoginScenario", "username");
         String validPass = JsonReader.getTestData(LOGIN_DATA_FILE, "validLoginScenario", "password");
 
-        loginPage.enterUsername(validUser);
-        loginPage.clickContinue();
-        loginPage.enterPassword(validPass);
-        loginPage.clickLogin();
+        loginScenario(validUser,validPass);
 
         if(Objects.equals(platform, "web")){
             WebLoginPage webLoginPage = new WebLoginPage(getDriver());
@@ -96,10 +100,7 @@ public class LoginAutomationTest extends BaseTest {
         String invalidPass = JsonReader.getTestData(LOGIN_DATA_FILE, "invalidLoginScenario", "password");
         String expectedError = JsonReader.getTestData(LOGIN_DATA_FILE, "invalidLoginScenario", "expectedErrorMessage");
 
-        loginPage.enterUsername(invalidUser);
-        loginPage.clickContinue();
-        loginPage.enterPassword(invalidPass);
-        loginPage.clickLogin();
+        loginScenario(invalidUser,invalidPass);
 
         String actualError = loginPage.getErrorMessage().toLowerCase();
         System.out.println(" [Final Extracted Error Context]: " + actualError + " | Expected: " + expectedError);

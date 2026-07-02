@@ -3,9 +3,10 @@ import io.appium.java_client.android.AndroidDriver;
 import org.openqa.selenium.WebDriver;
 import pages.BasePage;
 import pages.base.BaseLoginPage;
+import pages.base.BaseLogoutPage;
 import pages.web.locators.ElementKey;
 
-public class MobileLoginPage extends BasePage implements BaseLoginPage {
+public class MobileLoginPage extends BasePage implements BaseLoginPage , BaseLogoutPage {
 
     public MobileLoginPage(WebDriver driver) {
         super(driver);
@@ -34,14 +35,14 @@ public class MobileLoginPage extends BasePage implements BaseLoginPage {
     public boolean isDashboardDisplayed() {
         return isDisplayed(locator(ElementKey.NEWS_DASHBOARD));
     }
-
+    @Override
     public void logOut() {
         click(locator(ElementKey.NAVIGATION_BACK));
         click(locator(ElementKey.NAVIGATION_SETTINGS));
         click(locator(ElementKey.LOGOUT_BUTTON));
         click(locator(ElementKey.LOGOUT_CONFIRM));
     }
-
+    @Override
     public boolean verifyUserNameThatLoggedIn(String firstName, String lastName) {
 
         click(locator(ElementKey.NAVIGATION_SETTINGS));
