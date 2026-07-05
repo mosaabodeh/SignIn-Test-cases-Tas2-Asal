@@ -79,11 +79,56 @@ public final class ElementRegistry {
                 By.xpath("//input[@type='password' or @id='authPwd' or contains(@autocomplete,'current-password')]"));
 
         WEB.put(ElementKey.CONTINUE_BUTTON,
-                By.xpath("//button[contains(@class,'c-button') and contains(.,'Continue')]"));
-
+                By.xpath("//button[contains(@class,'c-button--primary')][.//span[contains(@class,'c-button__label') and contains(normalize-space(.), 'Continue')]]"));
         WEB.put(ElementKey.LOGIN_BUTTON,
                 By.xpath("//button[@type='submit' or contains(.,'Connect') or contains(.,'Sign')]"));
+        WEB.put(
+                ElementKey.ERROR_MESSAGE,
+                By.cssSelector(".alert-message, .error-message, .notification-error")
+        );
+
+// Profile avatar
+        WEB.put(
+                ElementKey.PROFILE_MENU,
+                By.cssSelector("app-profile-menu")
+        );
+
+// Avatar label inside profile menu
+        WEB.put(
+                ElementKey.PROFILE_MENU_AVATAR,
+                By.cssSelector("app-profile-menu .profile-avatar")
+        );
+
+// My Profile button
+        WEB.put(
+                ElementKey.MY_PROFILE_BUTTON,
+                By.xpath("//rb-dropdown-item[.//div[contains(translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'my profile')]]//div[@role='menuitem']")
+        );
+        WEB.put(ElementKey.NAVIGATION_SETTINGS,
+                By.xpath("//div[@role='button' and contains(@id, 'dropdown-user-menu--button')]"));
+
+// Logged username
+        WEB.put(
+                ElementKey.PROFILE_NAME,
+                By.xpath("//div[@class='myProfile_name']/span")
+        );
+
+
+// Close button
+        WEB.put(
+                ElementKey.CLOSE_BUTTON,
+                By.cssSelector("button[aria-label='Close']")
+        );
+        WEB.put(
+                ElementKey.LOGOUT_BUTTON,
+                By.xpath("//div[@role='menuitem'][.//div[contains(@class,'dropdown-item-label') and translate(normalize-space(text()),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='log out']]")
+        );
+        WEB.put(
+                ElementKey.LOGOUT_CONFIRM,
+                By.xpath("//button[contains(@class,'c-button--primary')][.//span[contains(@class,'c-button__label') and contains(normalize-space(.), 'Log out')]]")
+        );
     }
+
 
     public static By getLocator(ElementKey key,String platform){
         Map<ElementKey,By> locators = "web".equalsIgnoreCase(platform) ? WEB : MOBILE_LOCATORS;

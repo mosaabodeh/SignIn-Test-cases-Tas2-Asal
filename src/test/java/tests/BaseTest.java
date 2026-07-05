@@ -25,7 +25,7 @@ public abstract class BaseTest {
     private static AppiumDriverLocalService appiumServer;
     protected String platform;
 
-    private static final String DEFAULT_STANDALONE_PLATFORM = "android";
+    private static final String DEFAULT_STANDALONE_PLATFORM = "web";
 
     public WebDriver getDriver() {
         return DriverFactory.getDriver();

@@ -80,11 +80,19 @@ public class LoginAutomationTest extends BaseTest {
         loginScenario(validUser, validPass);
 
         DashboardPage dashboardPage = new DashboardPage(getDriver());
-
+if(Objects.equals(platform, "android"))
         Assert.assertTrue(
                 dashboardPage.verifyUserNameThatLoggedIn("Mosaab m", "odeh"),
                 "❌ User name mismatch after login"
         );
+else{
+
+    Assert.assertTrue(
+            dashboardPage .verifyUserNameThatLoggedIn("Mosaab m odeh"),
+            "❌ User name mismatch after login"
+    );
+}
+
 
         logout();
     }

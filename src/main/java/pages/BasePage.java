@@ -14,7 +14,7 @@ public class BasePage {
 
     protected WebDriver driver;
     protected WebDriverWait wait;
-    private final String platform="android";
+    private final String platform="web";
 
     public BasePage(WebDriver driver) {
         this.driver = driver;
@@ -94,7 +94,7 @@ public class BasePage {
     // ---------------- OPTIONAL MOBILE UTILITY ----------------
 
     public String verifyName(String name) {
-        String xpath = String.format("//android.widget.EditText[@text='%s']", name);
-        return driver.findElement(AppiumBy.xpath(xpath)).getText();
+       // String xpath = String.format("//android.widget.EditText[@text='%s']", name);
+        return driver.findElement(AppiumBy.xpath("//div[@class='myProfile_name']/span")).getText();
     }
 }

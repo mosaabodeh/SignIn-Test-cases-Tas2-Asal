@@ -12,7 +12,7 @@ public class LogoutPage extends BasePage implements BaseLogoutPage {
 
     @Override
     public void logOut() {
-        click(locator(ElementKey.NAVIGATION_BACK));
+
         click(locator(ElementKey.NAVIGATION_SETTINGS));
         click(locator(ElementKey.LOGOUT_BUTTON));
         click(locator(ElementKey.LOGOUT_CONFIRM));
