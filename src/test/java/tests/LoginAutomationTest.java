@@ -4,8 +4,11 @@ import io.appium.java_client.android.AndroidDriver;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import pages.DashboardAndroidPage;
+import pages.base.BaseDashboard;
 import pages.base.BaseLoginPage;
-import pages.DashboardPage;
+import pages.locators.ElementKey;
+import pages.web.DashboardWebPage;
 import pages.web.WebLoginPage;
 import pages.mobile.MobileLoginPage;
 import utils.JsonReader;
@@ -79,20 +82,20 @@ public class LoginAutomationTest extends BaseTest {
 
         loginScenario(validUser, validPass);
 
-        DashboardPage dashboardPage = new DashboardPage(getDriver());
-if(Objects.equals(platform, "android"))
+        BaseDashboard dashboard = new DashboardAndroidPage(getDriver());
+
+        if(Objects.equals(platform, "android")){
         Assert.assertTrue(
-                dashboardPage.verifyUserNameThatLoggedIn("Mosaab m", "odeh"),
-                "❌ User name mismatch after login"
-        );
+                dashboard.verifyUserNameThatLoggedIn("Mosaab m odeh"),
+                "❌ User name mismatch after login");
+
+        }
 else{
-
+            dashboard=new DashboardWebPage(getDriver());
     Assert.assertTrue(
-            dashboardPage .verifyUserNameThatLoggedIn("Mosaab m odeh"),
-            "❌ User name mismatch after login"
-    );
+            dashboard .verifyUserNameThatLoggedIn("Mosaab m odeh"),
+            "❌ User name mismatch after login");
 }
-
 
         logout();
     }

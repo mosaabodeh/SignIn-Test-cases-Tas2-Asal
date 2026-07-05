@@ -14,7 +14,7 @@ public class BasePage {
 
     protected WebDriver driver;
     protected WebDriverWait wait;
-    private final String platform="web";
+    private final String platform="android";
 
     public BasePage(WebDriver driver) {
         this.driver = driver;
@@ -51,8 +51,6 @@ public class BasePage {
         }
     }
 
-    // ---------------- WAITS ----------------
-
     protected WebElement waitForVisibility(By locator) {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
@@ -66,7 +64,6 @@ public class BasePage {
                 .until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
-    // ---------------- SPECIAL ACTION ----------------
 
     protected void waitForButtons(By buttonContainer, By buttonText, int timeoutInSeconds) {
 
@@ -91,10 +88,8 @@ public class BasePage {
         }
     }
 
-    // ---------------- OPTIONAL MOBILE UTILITY ----------------
-
     public String verifyName(String name) {
-       // String xpath = String.format("//android.widget.EditText[@text='%s']", name);
-        return driver.findElement(AppiumBy.xpath("//div[@class='myProfile_name']/span")).getText();
+        String xpath = String.format("//android.widget.EditText[@text='%s']", name);
+        return driver.findElement(AppiumBy.xpath(xpath)).getText();
     }
 }

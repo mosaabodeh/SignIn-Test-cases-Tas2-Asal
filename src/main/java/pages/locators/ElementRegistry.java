@@ -2,9 +2,15 @@ package pages.locators;
 
 import io.appium.java_client.AppiumBy;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 import java.util.EnumMap;
 import java.util.Map;
+
+import static drivers.DriverFactory.getDriver;
 
 public final class ElementRegistry {
 
@@ -53,6 +59,7 @@ public final class ElementRegistry {
                 ElementKey.MY_PROFILE_BUTTON,
                 AppiumBy.id("com.ale.rainbow:id/drawer_photo")
         );
+
 
         MOBILE_LOCATORS.put(
                 ElementKey.NAVIGATION_BACK,
@@ -128,7 +135,25 @@ public final class ElementRegistry {
                 By.xpath("//button[contains(@class,'c-button--primary')][.//span[contains(@class,'c-button__label') and contains(normalize-space(.), 'Log out')]]")
         );
     }
+    public static String getNameFieldLocator(String fieldName) {
+            String cleanName = fieldName.trim().toLowerCase();
 
+            if (cleanName.contains(" ")) {
+                cleanName = cleanName.split("\\s+")[0];
+            }
+
+            String nameXpath = String.format(
+                    "//android.widget.EditText[contains(translate(@text, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '%s')]",
+                    cleanName
+            );
+
+            WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(10));
+
+            WebElement nameElement = wait.until(ExpectedConditions.visibilityOfElementLocated(AppiumBy.xpath(nameXpath)));
+
+            return nameElement.getText().trim();
+
+    }
 
     public static By getLocator(ElementKey key,String platform){
         Map<ElementKey,By> locators = "web".equalsIgnoreCase(platform) ? WEB : MOBILE_LOCATORS;
