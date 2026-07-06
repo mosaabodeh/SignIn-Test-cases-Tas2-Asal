@@ -19,20 +19,30 @@ public class DashboardWebPage extends BasePage   implements BaseDashboard {
     }
 
     public void dismissPopupIfPresent() {
-    try {
-        WebElement popupCloseButton = new WebDriverWait(driver, Duration.ofSeconds(3))
-                .until(ExpectedConditions.visibilityOfElementLocated(
-                        By.cssSelector(".modal-close, .popup-close, [aria-label='Close'], .cdk-overlay-backdrop")));
-        popupCloseButton.click();
-    } catch (TimeoutException e) {
+        try {
+            By popupButtonLocator = By.xpath("//button[contains(., 'Allow') or contains(., 'Close') or @aria-label='Close']");
+
+            WebElement targetButton = new WebDriverWait(driver, Duration.ofSeconds(4))
+                    .until(ExpectedConditions.elementToBeClickable(popupButtonLocator));
+
+            try {
+                targetButton.click();
+                System.out.println("✅ [Web Banner] Audio permission popup dismissed normally via Click.");
+            } catch (Exception e) {
+                org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+                js.executeScript("arguments[0].click();", targetButton);
+                System.out.println("⚡ [Web Banner] Audio permission popup forced to dismiss via JS Click.");
+            }
+        } catch (TimeoutException e) {
+            System.out.println("ℹ️ No audio connectivity banner appeared, skipping bypass loop.");
+        }
     }
-}
     @Override
     public boolean verifyUserNameThatLoggedIn(String fullName) {
         dismissPopupIfPresent();
         System.out.println("Opening profile menu...");
-        click(locator(ElementKey.NAVIGATION_SETTINGS));
-
+        click(locator(ElementKey.USER_MENU));
+        dismissPopupIfPresent();
         System.out.println("Opening My Profile...");
         click(locator(ElementKey.MY_PROFILE_BUTTON));
 
@@ -50,7 +60,7 @@ public class DashboardWebPage extends BasePage   implements BaseDashboard {
 
         click(locator(ElementKey.CLOSE_BUTTON));
 
-        String expectedName = (fullName + " " ).trim();
+        String expectedName = fullName.trim();
 
         return actualName.equalsIgnoreCase(expectedName);
     }

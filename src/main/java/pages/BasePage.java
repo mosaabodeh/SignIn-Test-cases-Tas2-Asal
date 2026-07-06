@@ -14,7 +14,7 @@ public class BasePage {
 
     protected WebDriver driver;
     protected WebDriverWait wait;
-    private final String platform="android";
+    private final String platform="web";
 
     public BasePage(WebDriver driver) {
         this.driver = driver;
@@ -42,12 +42,28 @@ public class BasePage {
         element.clear();
         element.sendKeys(text);
     }
-
-    protected boolean isDisplayed(By locator) {
+    public void hideKeyboardIfVisible() {
         try {
-            return waitForVisibility(locator).isDisplayed();
+            if (driver instanceof io.appium.java_client.HidesKeyboard) {
+                ((io.appium.java_client.HidesKeyboard) driver).hideKeyboard();
+            }
         } catch (Exception e) {
-            return false;
+        }
+    }
+
+    public void waitUntilStable(WebElement element) {
+        Point lastLocation = null;
+        for (int i = 0; i < 20; i++) {
+            Point currentLocation = element.getLocation();
+            if (currentLocation.equals(lastLocation)) {
+                return;
+            }
+            lastLocation = currentLocation;
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 

@@ -1,6 +1,7 @@
-package pages;
+package pages.mobile;
 
 import org.openqa.selenium.WebDriver;
+import pages.BasePage;
 import pages.base.BaseDashboard;
 import pages.locators.ElementKey;
 
@@ -8,7 +9,7 @@ import static drivers.DriverFactory.getDriver;
 import static pages.locators.ElementRegistry.getNameFieldLocator;
 
 
-public class DashboardAndroidPage extends BasePage  implements BaseDashboard {
+public class DashboardAndroidPage extends BasePage implements BaseDashboard {
 
 
     public DashboardAndroidPage(WebDriver driver) {
@@ -20,7 +21,7 @@ public class DashboardAndroidPage extends BasePage  implements BaseDashboard {
         String firstName = nameParts[0];
         String lastName = (nameParts.length > 1) ? nameParts[nameParts.length - 1] : "";
 
-        click(locator(ElementKey.NAVIGATION_SETTINGS));
+        click(locator(ElementKey.USER_MENU));
         click(locator(ElementKey.MY_PROFILE_BUTTON));
 
         System.out.println("Expected Input -> First Name: " + firstName + " | Last Name: " + lastName);
@@ -42,7 +43,7 @@ public class DashboardAndroidPage extends BasePage  implements BaseDashboard {
         click(locator(ElementKey.NAVIGATION_BACK));
 
         String expectedFirst = firstName.contains(" ") ? firstName.split("\\s+")[0] : firstName;
-        click(locator(ElementKey.NAVIGATION_SETTINGS));
+        click(locator(ElementKey.USER_MENU));
 
         return expectedFirst.equalsIgnoreCase(realFirstName) && lastName.equalsIgnoreCase(realLastName);
     }

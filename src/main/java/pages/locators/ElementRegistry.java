@@ -37,7 +37,7 @@ public final class ElementRegistry {
 
         MOBILE_LOCATORS.put(
                 ElementKey.CONTINUE_BUTTON,
-                AppiumBy.androidUIAutomator("new UiSelector().text(\"Continue\")")
+                AppiumBy.xpath("//rb-button//button[contains(., 'Continue')]")
         );
 
         MOBILE_LOCATORS.put(
@@ -51,7 +51,7 @@ public final class ElementRegistry {
         );
 
         MOBILE_LOCATORS.put(
-                ElementKey.NAVIGATION_SETTINGS,
+                ElementKey.USER_MENU,
                 AppiumBy.xpath("//androidx.compose.ui.platform.ComposeView[@resource-id='com.ale.rainbow:id/compose_view']/android.view.View/android.view.View[1]")
         );
 
@@ -91,7 +91,7 @@ public final class ElementRegistry {
                 By.xpath("//button[@type='submit' or contains(.,'Connect') or contains(.,'Sign')]"));
         WEB.put(
                 ElementKey.ERROR_MESSAGE,
-                By.cssSelector(".alert-message, .error-message, .notification-error")
+                By.xpath("//div[contains(@class, 'authWindowContent__inputErrorMessage')]/span")
         );
 
 // Profile avatar
@@ -111,7 +111,7 @@ public final class ElementRegistry {
                 ElementKey.MY_PROFILE_BUTTON,
                 By.xpath("//rb-dropdown-item[.//div[contains(translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'my profile')]]//div[@role='menuitem']")
         );
-        WEB.put(ElementKey.NAVIGATION_SETTINGS,
+        WEB.put(ElementKey.USER_MENU,
                 By.xpath("//div[@role='button' and contains(@id, 'dropdown-user-menu--button')]"));
 
 // Logged username
@@ -120,11 +120,10 @@ public final class ElementRegistry {
                 By.xpath("//div[@class='myProfile_name']/span")
         );
 
-
 // Close button
         WEB.put(
                 ElementKey.CLOSE_BUTTON,
-                By.cssSelector("button[aria-label='Close']")
+                By.xpath("//rb-button//button[contains(@class, 'c-button--secondary') and contains(., 'Close')]")
         );
         WEB.put(
                 ElementKey.LOGOUT_BUTTON,

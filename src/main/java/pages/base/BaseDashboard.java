@@ -1,5 +1,5 @@
 package pages.base;
 
 public interface BaseDashboard {
-    public boolean verifyUserNameThatLoggedIn(String fullName);
+     boolean verifyUserNameThatLoggedIn(String fullName);
 }

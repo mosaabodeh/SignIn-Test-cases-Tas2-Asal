@@ -9,7 +9,6 @@ import pages.locators.ElementKey;
 
 public class WebLoginPage extends BasePage implements BaseLoginPage {
 
-    private static final String PLATFORM = "web";
     private final WebDriver driver;
 
     public WebLoginPage(WebDriver driver) {
@@ -32,19 +31,22 @@ public class WebLoginPage extends BasePage implements BaseLoginPage {
     }
 
     @Override
-    public void clickContinue() {
-       waitForVisibility(locator(ElementKey.CONTINUE_BUTTON));
+    public void clickContinue() throws InterruptedException {
+        Thread.sleep(1000);
        clickElementSafely(locator(ElementKey.CONTINUE_BUTTON));
+
     }
 
     @Override
-    public void clickLogin() {
+    public void clickLogin() throws InterruptedException {
+        Thread.sleep(500);
+        waitForVisibility(locator(ElementKey.LOGIN_BUTTON));
         clickElementSafely(locator(ElementKey.LOGIN_BUTTON));
     }
 
     @Override
     public String getErrorMessage() {
-        return waitForElement(locator(ElementKey.ERROR_MESSAGE), 3)
+        return waitForElement(locator(ElementKey.ERROR_MESSAGE), 5)
                 .getText()
                 .trim();
     }

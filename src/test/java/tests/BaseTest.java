@@ -11,7 +11,6 @@ import org.openqa.selenium.WebDriver;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
 import pages.LogoutPage;
-import pages.web.WebLoginPage;
 import utils.AppConfig;
 import utils.ConfigReader;
 
@@ -25,7 +24,7 @@ public abstract class BaseTest {
     private static AppiumDriverLocalService appiumServer;
     protected String platform;
 
-    private static final String DEFAULT_STANDALONE_PLATFORM = "android";
+    private static final String DEFAULT_STANDALONE_PLATFORM = "web";
 
     public WebDriver getDriver() {
         return DriverFactory.getDriver();

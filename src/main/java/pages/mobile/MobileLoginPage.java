@@ -6,6 +6,8 @@ import pages.base.BaseLoginPage;
 
 import pages.locators.ElementKey;
 
+import static drivers.DriverFactory.getDriver;
+
 public class MobileLoginPage extends BasePage implements BaseLoginPage  {
 
     public MobileLoginPage(WebDriver driver) {
@@ -14,11 +16,13 @@ public class MobileLoginPage extends BasePage implements BaseLoginPage  {
     @Override
     public void enterUsername(String username) {
         type(locator(ElementKey.EMAIL_FIELD), username);
-    }
+        hideKeyboardIfVisible();
+           }
 
     @Override
     public void enterPassword(String password) {
         type(locator(ElementKey.PASSWORD_FIELD), password);
+        hideKeyboardIfVisible();
     }
 
     @Override
