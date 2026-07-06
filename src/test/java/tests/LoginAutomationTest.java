@@ -2,7 +2,6 @@ package tests;
 
 import io.appium.java_client.android.AndroidDriver;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import pages.mobile.DashboardAndroidPage;
 import pages.base.BaseDashboard;
@@ -21,13 +20,12 @@ public class LoginAutomationTest extends BaseTest {
     private BaseDashboard dashboard;
     private static final String LOGIN_DATA_FILE = "loginData.json";
 
-    @BeforeMethod
-    public void setupPageObjectInstance() {
-        System.out.println("⚙️ [Test Lifecycle] Mapping Page Object instances for platform: " + platform);
 
-        resetToLoginPage(platform);
+    private void startAndPrepareExecutionEnvironment(String currentPlatform) {
+        initializeExecutionSession(currentPlatform);
 
-        if ("web".equalsIgnoreCase(platform)) {
+        System.out.println("⚙️ [Test Lifecycle] Mapping Page Objects for platform: " + this.platform);
+        if ("web".equalsIgnoreCase(this.platform)) {
             System.out.println("💻 Mapping Web Element Architecture...");
             loginPage = new WebLoginPage(getDriver());
             dashboard = new DashboardWebPage(getDriver());
@@ -36,6 +34,8 @@ public class LoginAutomationTest extends BaseTest {
             loginPage = new MobileLoginPage(getDriver());
             dashboard = new DashboardAndroidPage(getDriver());
         }
+
+        resetToLoginPage(this.platform);
     }
 
     private void resetToLoginPage(String platformName) {
@@ -46,7 +46,6 @@ public class LoginAutomationTest extends BaseTest {
                 org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) getDriver();
                 js.executeScript("window.localStorage.clear();");
                 js.executeScript("window.sessionStorage.clear();");
-
                 getDriver().get("https://web.openrainbow.net/app/en-us/login");
             } else {
                 if (getDriver() instanceof AndroidDriver mobileDriver) {
@@ -64,15 +63,23 @@ public class LoginAutomationTest extends BaseTest {
         }
     }
 
-    void loginScenario(String validUser, String pass ) throws InterruptedException {
+    void loginScenario(String validUser, String pass) throws InterruptedException {
         loginPage.enterUsername(validUser);
         loginPage.clickContinue();
         loginPage.enterPassword(pass);
         loginPage.clickLogin();
     }
 
-    @Test(priority = 1, groups = { "android", "web" },description = "Verify that a user can log in successfully with valid credentials")
-    public void testSuccessfulLoginHappyPath() throws InterruptedException {
+
+    @Test(
+            priority = 1,
+            groups = { "web", "android" },
+            dataProvider = "multiPlatformProvider",
+            description = "Verify that a user can log in successfully with valid credentials"
+    )
+    public void testSuccessfulLoginHappyPath(String executionPlatform) throws InterruptedException {
+        startAndPrepareExecutionEnvironment(executionPlatform);
+
         String validUser = JsonReader.getTestData(LOGIN_DATA_FILE, "validLoginScenario", "username");
         String validPass = JsonReader.getTestData(LOGIN_DATA_FILE, "validLoginScenario", "password");
 
@@ -86,8 +93,16 @@ public class LoginAutomationTest extends BaseTest {
         logout();
     }
 
-    @Test(priority = 2, groups = { "android", "web" }, description = "Verify that invalid credentials yield appropriate system validation error reactions")
-    public void testInvalidCredentialsErrorDisplay() throws InterruptedException {
+
+    @Test(
+            priority = 2,
+            groups = { "web", "android" },
+            dataProvider = "multiPlatformProvider",
+            description = "Verify that invalid credentials yield appropriate system validation error reactions"
+    )
+    public void testInvalidCredentialsErrorDisplay(String executionPlatform) throws InterruptedException {
+        startAndPrepareExecutionEnvironment(executionPlatform);
+
         String invalidUser = JsonReader.getTestData(LOGIN_DATA_FILE, "invalidLoginScenario", "username");
         String invalidPass = JsonReader.getTestData(LOGIN_DATA_FILE, "invalidLoginScenario", "password");
         String expectedError = JsonReader.getTestData(LOGIN_DATA_FILE, "invalidLoginScenario", "expectedErrorMessage");
@@ -104,9 +119,17 @@ public class LoginAutomationTest extends BaseTest {
                 "❌ Failsafe: Expected error prompt was not registered by the execution interface. Scraped text: " + actualError);
     }
 
-    @Test(priority = 3, groups = { "android", "web" }, description = "Verify empty input configurations trigger identification alerts")
-    public void testInvalidEmptyFieldsScenarioErrorDisplay() throws InterruptedException {
-        if ("android".equalsIgnoreCase(platform)) {
+
+    @Test(
+            priority = 3,
+            groups = { "web", "android" },
+            dataProvider = "multiPlatformProvider",
+            description = "Verify empty input configurations trigger identification alerts"
+    )
+    public void testInvalidEmptyFieldsScenarioErrorDisplay(String executionPlatform) throws InterruptedException {
+        startAndPrepareExecutionEnvironment(executionPlatform);
+
+        if ("android".equalsIgnoreCase(this.platform)) {
             loginPage.enterUsername("");
             loginPage.clickContinue();
 

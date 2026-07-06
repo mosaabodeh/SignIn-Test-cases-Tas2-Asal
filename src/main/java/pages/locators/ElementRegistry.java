@@ -37,12 +37,12 @@ public final class ElementRegistry {
 
         MOBILE_LOCATORS.put(
                 ElementKey.CONTINUE_BUTTON,
-                AppiumBy.xpath("//rb-button//button[contains(., 'Continue')]")
+                AppiumBy.androidUIAutomator("new UiSelector().className(\"android.view.View\").instance(9)")
         );
 
         MOBILE_LOCATORS.put(
                 ElementKey.LOGIN_BUTTON,
-                AppiumBy.androidUIAutomator("new UiSelector().text(\"Sign in\")")
+                AppiumBy.androidUIAutomator("new UiSelector().className(\"android.view.View\").instance(10)")
         );
 
         MOBILE_LOCATORS.put(

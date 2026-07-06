@@ -1,5 +1,6 @@
 package tests;
 
+import constanse.Platforms; // الكلاس الخاص بك
 import drivers.DriverFactory;
 import io.appium.java_client.InteractsWithApps;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
@@ -17,14 +18,17 @@ import utils.ConfigReader;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public abstract class BaseTest {
 
     private static AppiumDriverLocalService appiumServer;
     protected String platform;
+    private String currentEnv;
 
-    private static final String DEFAULT_STANDALONE_PLATFORM = "web";
+    private static final String DEFAULT_STANDALONE_PLATFORM = Platforms.CurrentPlatform;
 
     public WebDriver getDriver() {
         return DriverFactory.getDriver();
@@ -39,75 +43,80 @@ public abstract class BaseTest {
                     .withArgument(() -> "--allow-cors");
             appiumServer = AppiumDriverLocalService.buildService(builder);
             appiumServer.start();
+            System.out.println("✅ Appium server started successfully.");
         } catch (Exception e) {
             System.out.println("ℹ️ Node orchestration server context skipped or already hosted.");
         }
     }
 
-    @BeforeClass(alwaysRun = true)
-    @Parameters({"platform", "environment", "systemPort"})
-    public void setUp(@Optional("auto") String targetPlatform,
-                      @Optional("auto") String targetEnv,
-                      @Optional("8201") String systemPort) {
 
-        final String runningClassName = this.getClass().getSimpleName();
+    @DataProvider(name = "multiPlatformProvider")
+    public Object[][] extractPlatformsFromTestGroups(Method method) {
+        List<Object[]> targetPlatforms = new ArrayList<>();
 
-        if ("auto".equalsIgnoreCase(targetPlatform)) {
-            final String lowercaseClassName = runningClassName.toLowerCase();
-            if (lowercaseClassName.contains("web") || lowercaseClassName.contains("browser")) {
-                this.platform = "web";
-                targetEnv = "web_env";
-            } else if (lowercaseClassName.contains("mobile") || lowercaseClassName.contains("android")) {
-                this.platform = "android";
-                targetEnv = "realdevice";
-            } else {
-                this.platform = DEFAULT_STANDALONE_PLATFORM;
-                targetEnv = "web".equals(this.platform) ? "web_env" : "realdevice";
+        if (method.isAnnotationPresent(Test.class)) {
+            Test testAnnotation = method.getAnnotation(Test.class);
+            String[] groups = testAnnotation.groups();
+
+            for (String group : groups) {
+                if (group.equalsIgnoreCase("web") || group.equalsIgnoreCase("android") || group.equalsIgnoreCase("ios")) {
+                    targetPlatforms.add(new Object[]{group.toLowerCase()});
+                }
             }
-        } else {
-            this.platform = targetPlatform.toLowerCase().trim();
         }
 
-        if ("web".equals(this.platform) && "auto".equalsIgnoreCase(targetEnv)) {
-            targetEnv = "web_env";
-        } else if ("android".equals(this.platform) && "auto".equalsIgnoreCase(targetEnv)) {
-            targetEnv = "realdevice";
+        if (targetPlatforms.isEmpty()) {
+            targetPlatforms.add(new Object[]{DEFAULT_STANDALONE_PLATFORM});
         }
 
-        ConfigReader.loadConfig(targetEnv + ".properties");
+        return targetPlatforms.toArray(new Object[0][]);
+    }
+
+
+    protected void initializeExecutionSession(String targetPlatform) {
+        Platforms.CurrentPlatform = targetPlatform.toLowerCase().trim();
+        this.platform = Platforms.CurrentPlatform;
+
+        this.currentEnv = "web".equals(this.platform) ? "web_env" : "realdevice";
+
+        System.out.println("🚀 [Lifecycle] Switched Platforms.CurrentPlatform to: " + Platforms.CurrentPlatform);
+
+        ConfigReader.loadConfig(this.currentEnv + ".properties");
         DriverFactory.initDriver(this.platform);
 
         if ("web".equalsIgnoreCase(this.platform)) {
             getDriver().get(AppConfig.getWebUrl());
+        } else {
+            cleanMobileAppState();
         }
     }
 
-    @BeforeMethod(alwaysRun = true)
-    public void launchAppCleanly(Method method) {
+    private void cleanMobileAppState() {
         final WebDriver currentDriver = getDriver();
-        if (currentDriver == null || "web".equalsIgnoreCase(this.platform)) {
-            return;
-        }
-
         if (currentDriver instanceof InteractsWithApps mobileAppEngine) {
             try {
                 String appPackage = AppConfig.getAppPackage();
                 mobileAppEngine.terminateApp(appPackage);
                 mobileAppEngine.activateApp(appPackage);
+                System.out.println("🔄 Mobile app state optimized cleanly.");
             } catch (Exception e) {
                 System.out.println("⚠️ App state optimization hook skipped: " + e.getMessage());
             }
         }
     }
-    protected void logout() {
-        new LogoutPage(getDriver()).logOut();
 
+    protected void logout() {
+        if (getDriver() != null) {
+            new LogoutPage(getDriver()).logOut();
+        }
     }
+
     @AfterMethod(alwaysRun = true)
     public void tearDownAfterMethod(ITestResult result) {
         if (ITestResult.FAILURE == result.getStatus()) {
             takeScreenshot(result.getName());
         }
+        DriverFactory.quitDriver();
     }
 
     @AfterClass(alwaysRun = true)
@@ -119,20 +128,18 @@ public abstract class BaseTest {
     public void stopAppiumServer() {
         if (appiumServer != null && appiumServer.isRunning()) {
             appiumServer.stop();
+            System.out.println("🛑 Appium server stopped safely.");
         }
     }
 
     public void takeScreenshot(String testName) {
         final WebDriver currentDriver = getDriver();
-        if (currentDriver == null) {
-            return;
-        }
+        if (currentDriver == null) return;
         try {
             final File srcFile = ((TakesScreenshot) currentDriver).getScreenshotAs(OutputType.FILE);
             final String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            final String filePath = String.format("%s%sscreenshots%s%s_%s.png",
+            final String filePath = String.format("%s%sscreenhots%s%s_%s.png",
                     System.getProperty("user.dir"), File.separator, File.separator, testName, timestamp);
-
             FileUtils.copyFile(srcFile, new File(filePath));
         } catch (Exception e) {
             System.out.println("⚠️ Frame capture routine encountered an I/O system error.");

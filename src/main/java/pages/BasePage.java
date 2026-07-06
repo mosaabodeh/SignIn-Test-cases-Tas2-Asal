@@ -1,5 +1,6 @@
 package pages;
 
+import constanse.Platforms;
 import io.appium.java_client.AppiumBy;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -14,7 +15,7 @@ public class BasePage {
 
     protected WebDriver driver;
     protected WebDriverWait wait;
-    private final String platform="web";
+    private final String platform= Platforms.CurrentPlatform;
 
     public BasePage(WebDriver driver) {
         this.driver = driver;
