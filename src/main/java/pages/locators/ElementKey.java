@@ -15,5 +15,6 @@ public enum ElementKey {
     ERROR_MESSAGE,
     LOGOUT_BUTTON,
     LOGOUT_CONFIRM,
-    CLOSE_BUTTON
+    CLOSE_BUTTON,
+    USER_FULL_NAME
 }

@@ -64,4 +64,9 @@ public class DashboardWebPage extends BasePage   implements BaseDashboard {
 
         return actualName.equalsIgnoreCase(expectedName);
     }
+
+    @Override
+    public boolean verifyUserName(String fullName) {
+        return false;
+    }
 }

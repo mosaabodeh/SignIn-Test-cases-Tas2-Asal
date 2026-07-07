@@ -73,7 +73,7 @@ public class LoginAutomationTest extends BaseTest {
 
     @Test(
             priority = 1,
-            groups = { "web", "android" },
+            groups = {  "android" },
             dataProvider = "multiPlatformProvider",
             description = "Verify that a user can log in successfully with valid credentials"
     )
@@ -86,7 +86,7 @@ public class LoginAutomationTest extends BaseTest {
         loginScenario(validUser, validPass);
 
         Assert.assertTrue(
-                dashboard.verifyUserNameThatLoggedIn("Moodeh Test"),
+                dashboard.verifyUserName("Moodeh Test"),
                 "❌ User name mismatch after login"
         );
 

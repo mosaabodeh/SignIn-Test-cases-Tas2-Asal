@@ -44,6 +44,10 @@ public final class ElementRegistry {
                 ElementKey.LOGIN_BUTTON,
                 AppiumBy.androidUIAutomator("new UiSelector().className(\"android.view.View\").instance(10)")
         );
+        MOBILE_LOCATORS.put(
+                ElementKey.USER_FULL_NAME,
+                AppiumBy.androidUIAutomator("new UiSelector().resourceId(\"com.ale.rainbow:id/userNameTextView\")")
+        );
 
         MOBILE_LOCATORS.put(
                 ElementKey.NEWS_DASHBOARD,
