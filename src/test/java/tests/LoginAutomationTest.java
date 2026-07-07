@@ -70,7 +70,6 @@ public class LoginAutomationTest extends BaseTest {
         loginPage.clickLogin();
     }
 
-
     @Test(
             priority = 1,
             groups = { "web", "android" },
