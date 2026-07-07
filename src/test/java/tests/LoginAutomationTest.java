@@ -73,7 +73,7 @@ public class LoginAutomationTest extends BaseTest {
 
     @Test(
             priority = 1,
-            groups = {  "android" },
+            groups = { "web", "android" },
             dataProvider = "multiPlatformProvider",
             description = "Verify that a user can log in successfully with valid credentials"
     )

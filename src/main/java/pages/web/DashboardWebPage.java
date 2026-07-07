@@ -38,7 +38,7 @@ public class DashboardWebPage extends BasePage   implements BaseDashboard {
         }
     }
     @Override
-    public boolean verifyUserNameThatLoggedIn(String fullName) {
+    public boolean verifyUserName(String fullName) {
         dismissPopupIfPresent();
         System.out.println("Opening profile menu...");
         click(locator(ElementKey.USER_MENU));
@@ -65,8 +65,5 @@ public class DashboardWebPage extends BasePage   implements BaseDashboard {
         return actualName.equalsIgnoreCase(expectedName);
     }
 
-    @Override
-    public boolean verifyUserName(String fullName) {
-        return false;
-    }
+
 }
