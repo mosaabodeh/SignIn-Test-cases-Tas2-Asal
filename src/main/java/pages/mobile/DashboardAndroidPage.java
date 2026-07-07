@@ -32,7 +32,6 @@ public class DashboardAndroidPage extends BasePage implements BaseDashboard {
         click(locator(ElementKey.NAVIGATION_BACK));
 
         String expectedFirst = firstName.contains(" ") ? firstName.split("\\s+")[0] : firstName;
-        click(locator(ElementKey.USER_MENU));
 
         return expectedFirst.equalsIgnoreCase(realFirstName) && lastName.equalsIgnoreCase(realLastName);
     }
