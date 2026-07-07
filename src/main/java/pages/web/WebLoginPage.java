@@ -70,8 +70,6 @@ public class WebLoginPage extends BasePage implements BaseLoginPage {
     }
 
 
-
-
     private void clickElementSafely(By locator) {
         WebElement element = waitForClickability(locator);
 

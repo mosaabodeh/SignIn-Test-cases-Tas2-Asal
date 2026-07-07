@@ -1,26 +1,19 @@
 package pages.locators;
 
 public enum ElementKey {
-
     EMAIL_FIELD,
     PASSWORD_FIELD,
     CONTINUE_BUTTON,
     LOGIN_BUTTON,
     NEWS_DASHBOARD,
-
     USER_MENU,
     MY_PROFILE_BUTTON,
     NAVIGATION_BACK,
     PROFILE_MENU,
     PROFILE_MENU_AVATAR,
     PROFILE_NAME,
-
     ERROR_MESSAGE,
-
     LOGOUT_BUTTON,
     LOGOUT_CONFIRM,
-
     CLOSE_BUTTON
-
-
 }

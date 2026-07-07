@@ -5,12 +5,9 @@ import pages.BasePage;
 import pages.base.BaseDashboard;
 import pages.locators.ElementKey;
 
-import static drivers.DriverFactory.getDriver;
 import static pages.locators.ElementRegistry.getNameFieldLocator;
 
-
 public class DashboardAndroidPage extends BasePage implements BaseDashboard {
-
 
     public DashboardAndroidPage(WebDriver driver) {
         super(driver);
@@ -31,15 +28,7 @@ public class DashboardAndroidPage extends BasePage implements BaseDashboard {
 
         System.out.println("Actual Found -> First Name: " + realFirstName + " | Last Name: " + realLastName);
 
-        try {
-            if (getDriver() instanceof io.appium.java_client.HidesKeyboard) {
-                ((io.appium.java_client.HidesKeyboard) getDriver()).hideKeyboard();
-                System.out.println("Keyboard hidden successfully.");
-            }
-        } catch (Exception e) {
-            System.out.println("Keyboard was not visible or couldn't be hidden.");
-        }
-
+        hideKeyboardIfVisible();
         click(locator(ElementKey.NAVIGATION_BACK));
 
         String expectedFirst = firstName.contains(" ") ? firstName.split("\\s+")[0] : firstName;

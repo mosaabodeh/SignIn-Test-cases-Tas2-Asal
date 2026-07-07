@@ -98,8 +98,7 @@ public class LoginAutomationTest extends BaseTest {
             priority = 2,
             groups = { "web", "android" },
             dataProvider = "multiPlatformProvider",
-            description = "Verify that invalid credentials yield appropriate system validation error reactions"
-    )
+            description = "Verify that invalid credentials yield appropriate system validation error reactions")
     public void testInvalidCredentialsErrorDisplay(String executionPlatform) throws InterruptedException {
         startAndPrepareExecutionEnvironment(executionPlatform);
 
