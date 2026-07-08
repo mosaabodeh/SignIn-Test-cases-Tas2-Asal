@@ -73,7 +73,7 @@ public final class DriverFactory {
             DRIVER_THREAD.set(driver);
 
         } catch (Exception e) {
-            releaseAndroidLockIfHeld(); // 💡 لا تترك القفل معلقاً لو فشل إنشاء الجلسة
+            releaseAndroidLockIfHeld();
             throw new IllegalStateException("❌ Session Context Collapse for platform [" + platform + "]", e);
         }
     }

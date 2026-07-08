@@ -18,9 +18,6 @@ public class LoginAutomationTest extends BaseTest {
 
     private static final String LOGIN_DATA_FILE = "loginData.json";
 
-    /**
-     * 💡 تعديل جوهري: نعتمد بالكامل على المعامل الممرر للدالة لضمان عزل الخيوط
-     */
     private Object[] startAndPrepareExecutionEnvironment(String currentPlatform) {
         initializeExecutionSession(currentPlatform);
 
@@ -29,7 +26,6 @@ public class LoginAutomationTest extends BaseTest {
         BaseLoginPage localLoginPage;
         BaseDashboard localDashboard;
 
-        // الفحص يتم بناءً على المتغير المحلي المعزول لقطع الـ Race Condition
         if ("web".equalsIgnoreCase(currentPlatform)) {
             System.out.println("💻 Mapping Web Element Architecture...");
             localLoginPage = new WebLoginPage(getDriver(), currentPlatform);
@@ -45,9 +41,7 @@ public class LoginAutomationTest extends BaseTest {
         return new Object[]{localLoginPage, localDashboard};
     }
 
-    /**
-     * 💡 تم تمرير المنصة الحالية لضمان تنفيذ كود التصفير الصحيح لكل خيط
-     */
+
     private void resetToLoginPage(String currentPlatform) {
         try {
             if ("web".equalsIgnoreCase(currentPlatform)) {
