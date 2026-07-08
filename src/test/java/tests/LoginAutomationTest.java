@@ -41,11 +41,7 @@ public class LoginAutomationTest extends BaseTest {
 
 
     private void resetToLoginPage(String currentPlatform) {
-        if (!"web".equalsIgnoreCase(currentPlatform)) {
-
-            return;
-        }
-
+        if ("web".equalsIgnoreCase(currentPlatform))
         try {
             System.out.println("Wiping browser cache storage nodes...");
             getDriver().manage().deleteAllCookies();
@@ -56,6 +52,8 @@ public class LoginAutomationTest extends BaseTest {
         } catch (Exception e) {
             System.out.println("⚠️ Warning: Non-fatal state context clean bypass: " + e.getMessage());
         }
+        else return ;
+
     }
 
     private void loginScenario(BaseLoginPage loginPage, String validUser, String pass) throws InterruptedException {
