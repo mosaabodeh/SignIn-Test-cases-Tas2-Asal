@@ -79,7 +79,7 @@ public class BasePage {
     }
 
 
-    protected void waitForButtons(By buttonContainer, By buttonText, int timeoutInSeconds) {
+    protected void waitForButtons(By buttonContainer , int timeoutInSeconds) {
 
         WebDriverWait customWait = new WebDriverWait(driver, Duration.ofSeconds(timeoutInSeconds));
 
