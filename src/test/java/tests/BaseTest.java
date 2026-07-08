@@ -1,6 +1,5 @@
 package tests;
 
-import constanse.Platforms; // الكلاس الخاص بك
 import drivers.DriverFactory;
 import io.appium.java_client.InteractsWithApps;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
@@ -25,13 +24,16 @@ import java.util.List;
 public abstract class BaseTest {
 
     private static AppiumDriverLocalService appiumServer;
-    protected String platform;
-    private String currentEnv;
 
-    private static final String DEFAULT_STANDALONE_PLATFORM = Platforms.CurrentPlatform;
+    // 💡 حقيقةً Thread-Safe: كل خيط يملك نسخته الخاصة من اسم المنصة
+    private static final ThreadLocal<String> PLATFORM_THREAD = new ThreadLocal<>();
 
     public WebDriver getDriver() {
         return DriverFactory.getDriver();
+    }
+
+    protected String getPlatform() {
+        return PLATFORM_THREAD.get();
     }
 
     @BeforeSuite(alwaysRun = true)
@@ -49,8 +51,7 @@ public abstract class BaseTest {
         }
     }
 
-
-    @DataProvider(name = "multiPlatformProvider")
+    @DataProvider(name = "multiPlatformProvider", parallel = true)
     public Object[][] extractPlatformsFromTestGroups(Method method) {
         List<Object[]> targetPlatforms = new ArrayList<>();
 
@@ -58,33 +59,39 @@ public abstract class BaseTest {
             Test testAnnotation = method.getAnnotation(Test.class);
             String[] groups = testAnnotation.groups();
 
+            boolean hasWeb = false;
+            boolean hasAndroid = false;
+
             for (String group : groups) {
-                if (group.equalsIgnoreCase("web") || group.equalsIgnoreCase("android") || group.equalsIgnoreCase("ios")) {
-                    targetPlatforms.add(new Object[]{group.toLowerCase()});
+                if (group.equalsIgnoreCase("web") && !hasWeb) {
+                    targetPlatforms.add(new Object[]{"web"});
+                    hasWeb = true;
+                } else if (group.equalsIgnoreCase("android") && !hasAndroid) {
+                    targetPlatforms.add(new Object[]{"android"});
+                    hasAndroid = true;
                 }
             }
         }
 
         if (targetPlatforms.isEmpty()) {
-            targetPlatforms.add(new Object[]{DEFAULT_STANDALONE_PLATFORM});
+            targetPlatforms.add(new Object[]{"web"});
         }
 
         return targetPlatforms.toArray(new Object[0][]);
     }
 
-
     protected void initializeExecutionSession(String targetPlatform) {
-        Platforms.CurrentPlatform = targetPlatform.toLowerCase().trim();
-        this.platform = Platforms.CurrentPlatform;
+        final String normalizedPlatform = targetPlatform.toLowerCase().trim();
+        PLATFORM_THREAD.set(normalizedPlatform);
+        final String env = "web".equals(normalizedPlatform) ? "web_env" : "realdevice";
 
-        this.currentEnv = "web".equals(this.platform) ? "web_env" : "realdevice";
+        System.out.println("🚀 [Lifecycle - Thread: " + Thread.currentThread().getId()
+                + "] Switched local platform reference to: " + normalizedPlatform);
 
-        System.out.println("🚀 [Lifecycle] Switched Platforms.CurrentPlatform to: " + Platforms.CurrentPlatform);
+        ConfigReader.loadConfig(env + ".properties");
+        DriverFactory.initDriver(normalizedPlatform);
 
-        ConfigReader.loadConfig(this.currentEnv + ".properties");
-        DriverFactory.initDriver(this.platform);
-
-        if ("web".equalsIgnoreCase(this.platform)) {
+        if ("web".equalsIgnoreCase(normalizedPlatform)) {
             getDriver().get(AppConfig.getWebUrl());
         } else {
             cleanMobileAppState();
@@ -107,7 +114,7 @@ public abstract class BaseTest {
 
     protected void logout() {
         if (getDriver() != null) {
-            new LogoutPage(getDriver()).logOut();
+            new LogoutPage(getDriver(), getPlatform()).logOut();
         }
     }
 
@@ -117,6 +124,7 @@ public abstract class BaseTest {
             takeScreenshot(result.getName());
         }
         DriverFactory.quitDriver();
+        PLATFORM_THREAD.remove(); // 💡 يمنع تسرّب المنصة بين الاختبارات لو أعاد الـ Thread Pool استخدام نفس الخيط
     }
 
     @AfterClass(alwaysRun = true)
@@ -137,9 +145,11 @@ public abstract class BaseTest {
         if (currentDriver == null) return;
         try {
             final File srcFile = ((TakesScreenshot) currentDriver).getScreenshotAs(OutputType.FILE);
-            final String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            final String filePath = String.format("%s%sscreenhots%s%s_%s.png",
-                    System.getProperty("user.dir"), File.separator, File.separator, testName, timestamp);
+            final String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss_SSS").format(new Date());
+            // 💡 أضفنا المنصة لاسم الملف لتفادي تصادم أسماء الصور عند التشغيل المتوازي
+            final String filePath = String.format("%s%sscreenhots%s%s_%s_%s.png",
+                    System.getProperty("user.dir"), File.separator, File.separator,
+                    testName, getPlatform(), timestamp);
             FileUtils.copyFile(srcFile, new File(filePath));
         } catch (Exception e) {
             System.out.println("⚠️ Frame capture routine encountered an I/O system error.");

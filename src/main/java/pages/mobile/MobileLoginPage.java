@@ -10,10 +10,9 @@ import static drivers.DriverFactory.getDriver;
 
 public class MobileLoginPage extends BasePage implements BaseLoginPage  {
 
-    public MobileLoginPage(WebDriver driver) {
-        super(driver);
-    }
-    @Override
+    public MobileLoginPage(WebDriver driver, String platform) {
+        super(driver, platform);
+    }    @Override
     public void enterUsername(String username) {
         type(locator(ElementKey.EMAIL_FIELD), username);
         hideKeyboardIfVisible();

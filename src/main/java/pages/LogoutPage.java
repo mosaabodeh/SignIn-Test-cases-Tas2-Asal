@@ -6,8 +6,8 @@ import pages.locators.ElementKey;
 
 public class LogoutPage extends BasePage implements BaseLogoutPage {
 
-    public LogoutPage(WebDriver driver) {
-        super(driver);
+    public LogoutPage(WebDriver driver, String platform) {
+        super(driver,platform);
     }
 
     @Override

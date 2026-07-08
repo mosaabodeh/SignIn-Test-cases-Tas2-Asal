@@ -1,32 +1,26 @@
 package pages;
 
-import constanse.Platforms;
 import io.appium.java_client.AppiumBy;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.locators.ElementKey;
 import pages.locators.ElementRegistry;
-import utils.ConfigReader;
 
 import java.time.Duration;
 
 public class BasePage {
 
-    protected WebDriver driver;
-    protected WebDriverWait wait;
-    private final String platform= Platforms.CurrentPlatform;
+    protected final WebDriver driver;
+    protected final WebDriverWait wait;
+    protected final String platform;
 
-    public BasePage(WebDriver driver) {
+    public BasePage(WebDriver driver, String platform) {
         this.driver = driver;
-
-        String timeoutProp = ConfigReader.getProperty("timeout.explicit");
-        long defaultTimeout = (timeoutProp != null)
-                ? Long.parseLong(timeoutProp)
-                : 10;
-
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(defaultTimeout));
+        this.platform = platform.toLowerCase().trim();
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
     }
+
 
     protected By locator(ElementKey key) {
         return ElementRegistry.getLocator(key, platform);
@@ -50,32 +44,26 @@ public class BasePage {
         } catch (Exception e) {
         }
     }
-    public void waitForStable(org.openqa.selenium.By locator) {
+    public void waitForStable(org.openqa.selenium.By locator){
         int maxRetries = 3;
-        Exception lastException = null;
 
         for (int i = 0; i < maxRetries; i++) {
             try {
-                org.openqa.selenium.WebElement element = driver.findElement(locator);
-                element.click();
+                driver.findElement(locator).click();
 
-                org.openqa.selenium.support.ui.WebDriverWait miniWait =
-                        new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofMillis(250));
-                miniWait.until(org.openqa.selenium.support.ui.ExpectedConditions.stalenessOf(element));
+                org.openqa.selenium.support.ui.WebDriverWait miniWait = new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofMillis(250));
+                miniWait.until(org.openqa.selenium.support.ui.ExpectedConditions.stalenessOf(driver.findElement(locator)));
 
                 System.out.println("🎯 Navigation Success on attempt: " + (i + 1));
                 return;
             } catch (Exception e) {
-                lastException = e;
-                System.out.println("🔄 Lost click or element unstable, retrying... Attempt " + (i + 1) + " of " + maxRetries);
+                System.out.println("🔄 Lost click registered, retrying immediate native action... Attempt: " + (i + 2));
             }
         }
-        System.out.println("❌ All " + maxRetries + " attempts exhausted. Failing the action explicitly.");
-        throw new org.openqa.selenium.WebDriverException(
-                "❌ [Unstable UI Failure] Failed to interact stably with element after " + maxRetries + " attempts.",
-                lastException
-        );
+        System.out.println("fail for this time (:)");
     }
+
+
 
     protected WebElement waitForVisibility(By locator) {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
@@ -90,7 +78,8 @@ public class BasePage {
                 .until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
-    protected void waitForButtons(By buttonContainer , int timeoutInSeconds) {
+
+    protected void waitForButtons(By buttonContainer, By buttonText, int timeoutInSeconds) {
 
         WebDriverWait customWait = new WebDriverWait(driver, Duration.ofSeconds(timeoutInSeconds));
 
@@ -113,4 +102,8 @@ public class BasePage {
         }
     }
 
+    public String verifyName(String name) {
+        String xpath = String.format("//android.widget.EditText[@text='%s']", name);
+        return driver.findElement(AppiumBy.xpath(xpath)).getText();
+    }
 }

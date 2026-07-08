@@ -13,10 +13,15 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.Semaphore;
 
 public final class DriverFactory {
 
     private static final ThreadLocal<WebDriver> DRIVER_THREAD = new ThreadLocal<>();
+
+
+    private static final Semaphore ANDROID_DEVICE_LOCK = new Semaphore(1, true);
+    private static final ThreadLocal<Boolean> HOLDS_ANDROID_LOCK = ThreadLocal.withInitial(() -> false);
 
     private DriverFactory() {}
 
@@ -25,15 +30,31 @@ public final class DriverFactory {
     }
 
     public static void initDriver(final String platform) {
-        Objects.requireNonNull(platform, "Platform string cannot be null when initializing the driver session.");
+        Objects.requireNonNull(platform, "Platform string cannot be null.");
 
         if (getDriver() != null) {
-            return;
+            quitDriver();
+        }
+
+        final boolean isAndroid = "android".equalsIgnoreCase(platform.trim());
+
+        if (isAndroid) {
+            try {
+                System.out.println("⏳ [Thread: " + Thread.currentThread().getId()
+                        + "] Waiting for exclusive Android device access...");
+                ANDROID_DEVICE_LOCK.acquire();
+                HOLDS_ANDROID_LOCK.set(true);
+                System.out.println("🔓 [Thread: " + Thread.currentThread().getId()
+                        + "] Acquired Android device lock.");
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException("Interrupted while waiting for Android device lock", ie);
+            }
         }
 
         try {
             final WebDriver driver;
-            if ("android".equalsIgnoreCase(platform.trim())) {
+            if (isAndroid) {
                 final UiAutomator2Options options = new UiAutomator2Options()
                         .setPlatformName(ConfigReader.getPropertyOrDefault("platform.name", "Android"))
                         .setAutomationName(ConfigReader.getPropertyOrDefault("automation.name", "UiAutomator2"))
@@ -52,7 +73,8 @@ public final class DriverFactory {
             DRIVER_THREAD.set(driver);
 
         } catch (Exception e) {
-            throw new IllegalStateException("❌ Factory Engine Collapse: Session failed initialization context for platform [" + platform + "]", e);
+            releaseAndroidLockIfHeld(); // 💡 لا تترك القفل معلقاً لو فشل إنشاء الجلسة
+            throw new IllegalStateException("❌ Session Context Collapse for platform [" + platform + "]", e);
         }
     }
 
@@ -63,25 +85,25 @@ public final class DriverFactory {
                 driverInstance.quit();
             } finally {
                 DRIVER_THREAD.remove();
+                releaseAndroidLockIfHeld();
             }
+        }
+    }
+
+    private static void releaseAndroidLockIfHeld() {
+        if (Boolean.TRUE.equals(HOLDS_ANDROID_LOCK.get())) {
+            ANDROID_DEVICE_LOCK.release();
+            HOLDS_ANDROID_LOCK.set(false);
+            System.out.println("🔒 [Thread: " + Thread.currentThread().getId()
+                    + "] Released Android device lock.");
         }
     }
 
     private static ChromeOptions getChromeOptions() {
         final ChromeOptions options = new ChromeOptions();
-        options.addArguments(
-                "--lang=en-US",
-                "--use-fake-ui-for-media-stream",
-                "--disable-blink-features=AutomationControlled"
-        );
-
-        final Map<String, Object> preferences = new HashMap<>();
-        preferences.put("profile.default_content_setting_values.media_stream_camera", 1);
-        preferences.put("profile.default_content_setting_values.media_stream_mic", 1);
+        options.addArguments("--lang=en-US", "--use-fake-ui-for-media-stream", "--disable-blink-features=AutomationControlled");
+        Map<String, Object> preferences = new HashMap<>();
         preferences.put("profile.default_content_setting_values.notifications", 1);
-        preferences.put("intl.accept_languages", "en-US,en");
-        preferences.put("profile.password_manager_leak_detection", false);
-
         options.setExperimentalOption("prefs", preferences);
         return options;
     }

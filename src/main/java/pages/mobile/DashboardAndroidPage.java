@@ -9,8 +9,8 @@ import pages.locators.ElementKey;
 
 public class DashboardAndroidPage extends BasePage implements BaseDashboard {
 
-    public DashboardAndroidPage(WebDriver driver) {
-        super(driver);
+    public DashboardAndroidPage(WebDriver driver, String platform) {
+        super(driver,platform);
     }
 
 

@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="Web Login Test Suite">
+<suite name="Cross Platform Login Test Suite"
+       parallel="methods"
+       thread-count="2"
+       data-provider-thread-count="2">
 
     <listeners>
         <listener class-name="utils.TestListener"/>
     </listeners>
 
-    <test name="Web Application Authentication Tests">
-        <parameter name="platform" value="web"/>
+    <test name="Cross Platform Authentication Tests">
+        <groups>
+            <run>
+                <include name="web"/>
+                <include name="android"/>
+            </run>
+        </groups>
         <classes>
             <class name="tests.LoginAutomationTest"/>
         </classes>

@@ -16,30 +16,41 @@ import java.util.stream.Stream;
 
 public class LoginAutomationTest extends BaseTest {
 
-    private BaseLoginPage loginPage;
-    private BaseDashboard dashboard;
     private static final String LOGIN_DATA_FILE = "loginData.json";
 
-    private void startAndPrepareExecutionEnvironment(String currentPlatform) {
+    /**
+     * 💡 تعديل جوهري: نعتمد بالكامل على المعامل الممرر للدالة لضمان عزل الخيوط
+     */
+    private Object[] startAndPrepareExecutionEnvironment(String currentPlatform) {
         initializeExecutionSession(currentPlatform);
 
-        System.out.println("⚙️ [Test Lifecycle] Mapping Page Objects for platform: " + this.platform);
-        if ("web".equalsIgnoreCase(this.platform)) {
+        System.out.println("⚙️ [Test Lifecycle Thread: " + Thread.currentThread().getId() + "] Mapping Page Objects for: " + currentPlatform);
+
+        BaseLoginPage localLoginPage;
+        BaseDashboard localDashboard;
+
+        // الفحص يتم بناءً على المتغير المحلي المعزول لقطع الـ Race Condition
+        if ("web".equalsIgnoreCase(currentPlatform)) {
             System.out.println("💻 Mapping Web Element Architecture...");
-            loginPage = new WebLoginPage(getDriver());
-            dashboard = new DashboardWebPage(getDriver());
+            localLoginPage = new WebLoginPage(getDriver(), currentPlatform);
+            localDashboard = new DashboardWebPage(getDriver(), currentPlatform);
         } else {
             System.out.println("📱 Mapping Mobile Element Architecture...");
-            loginPage = new MobileLoginPage(getDriver());
-            dashboard = new DashboardAndroidPage(getDriver());
+            localLoginPage = new MobileLoginPage(getDriver(), currentPlatform);
+            localDashboard = new DashboardAndroidPage(getDriver(), currentPlatform);
         }
 
-        resetToLoginPage(this.platform);
+        resetToLoginPage(currentPlatform);
+
+        return new Object[]{localLoginPage, localDashboard};
     }
 
-    private void resetToLoginPage(String platformName) {
+    /**
+     * 💡 تم تمرير المنصة الحالية لضمان تنفيذ كود التصفير الصحيح لكل خيط
+     */
+    private void resetToLoginPage(String currentPlatform) {
         try {
-            if ("web".equalsIgnoreCase(platformName)) {
+            if ("web".equalsIgnoreCase(currentPlatform)) {
                 System.out.println("Wiping browser cache storage nodes...");
                 getDriver().manage().deleteAllCookies();
                 org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) getDriver();
@@ -62,7 +73,7 @@ public class LoginAutomationTest extends BaseTest {
         }
     }
 
-    void loginScenario(String validUser, String pass) throws InterruptedException {
+    private void loginScenario(BaseLoginPage loginPage, String validUser, String pass) throws InterruptedException {
         loginPage.enterUsername(validUser);
         loginPage.clickContinue();
         loginPage.enterPassword(pass);
@@ -76,16 +87,19 @@ public class LoginAutomationTest extends BaseTest {
             description = "Verify that a user can log in successfully with valid credentials"
     )
     public void testSuccessfulLoginHappyPath(String executionPlatform) throws InterruptedException {
-        startAndPrepareExecutionEnvironment(executionPlatform);
+        Object[] pages = startAndPrepareExecutionEnvironment(executionPlatform);
+        BaseLoginPage loginPage = (BaseLoginPage) pages[0];
+        BaseDashboard dashboard = (BaseDashboard) pages[1];
 
         String validUser = JsonReader.getTestData(LOGIN_DATA_FILE, "validLoginScenario", "username");
         String validPass = JsonReader.getTestData(LOGIN_DATA_FILE, "validLoginScenario", "password");
 
-        loginScenario(validUser, validPass);
+        loginScenario(loginPage, validUser, validPass);
 
         Assert.assertTrue(
                 dashboard.verifyUserName("Moodeh Test"),
                 "❌ User name mismatch after login");
+
         logout();
     }
 
@@ -93,31 +107,33 @@ public class LoginAutomationTest extends BaseTest {
             dataProvider = "multiPlatformProvider",
             description = "Verify that invalid credentials yield appropriate system validation error reactions")
     public void testInvalidCredentialsErrorDisplay(String executionPlatform) throws InterruptedException {
-        startAndPrepareExecutionEnvironment(executionPlatform);
+        Object[] pages = startAndPrepareExecutionEnvironment(executionPlatform);
+        BaseLoginPage loginPage = (BaseLoginPage) pages[0];
 
         String invalidUser = JsonReader.getTestData(LOGIN_DATA_FILE, "invalidLoginScenario", "username");
         String invalidPass = JsonReader.getTestData(LOGIN_DATA_FILE, "invalidLoginScenario", "password");
         String expectedError = JsonReader.getTestData(LOGIN_DATA_FILE, "invalidLoginScenario", "expectedErrorMessage");
 
-        loginScenario(invalidUser, invalidPass);
+        loginScenario(loginPage, invalidUser, invalidPass);
 
         String actualError = loginPage.getErrorMessage().toLowerCase();
         System.out.println(" [Final Extracted Error Context]: " + actualError + " | Expected: " + expectedError);
 
         boolean isValidationTriggered = Stream.of(expectedError, "enter", "valid", "incorrect", "password", "identifier", "rainbow login")
                 .anyMatch(actualError::contains);
-        System.out.println("The Actual Error Is : " + actualError);
+
         Assert.assertTrue(isValidationTriggered,
                 "❌ Failsafe: Expected error prompt was not registered by the execution interface. Scraped text: " + actualError);
     }
 
-    @Test(priority = 3,groups = { "web", "android" },
+    @Test(priority = 3, groups = { "web", "android" },
             dataProvider = "multiPlatformProvider",
             description = "Verify empty input configurations trigger identification alerts")
     public void testInvalidEmptyFieldsScenarioErrorDisplay(String executionPlatform) throws InterruptedException {
-        startAndPrepareExecutionEnvironment(executionPlatform);
+        Object[] pages = startAndPrepareExecutionEnvironment(executionPlatform);
+        BaseLoginPage loginPage = (BaseLoginPage) pages[0];
 
-        if ("android".equalsIgnoreCase(this.platform)) {
+        if ("android".equalsIgnoreCase(executionPlatform)) {
             loginPage.enterUsername("");
             loginPage.clickContinue();
 

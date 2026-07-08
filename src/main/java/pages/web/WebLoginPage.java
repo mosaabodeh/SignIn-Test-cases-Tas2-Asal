@@ -10,8 +10,8 @@ import pages.locators.ElementKey;
 public class WebLoginPage extends BasePage implements BaseLoginPage {
 
 
-    public WebLoginPage(WebDriver driver) {
-        super(driver);
+    public WebLoginPage(WebDriver driver,String platform) {
+        super(driver,platform);
     }
 
     @Override

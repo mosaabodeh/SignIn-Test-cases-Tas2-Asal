@@ -14,8 +14,8 @@ import java.time.Duration;
 
 public class DashboardWebPage extends BasePage   implements BaseDashboard {
 
-    public DashboardWebPage(WebDriver driver) {
-        super(driver);
+    public DashboardWebPage(WebDriver driver, String platform) {
+        super(driver,platform);
     }
 
     public void dismissPopupIfPresent() {
