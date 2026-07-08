@@ -9,9 +9,12 @@ public final class AppConfig {
     }
 
     public static String getAppPackage() {
-        return ConfigReader.getPropertyOrDefault("app.package", "com.ale.rainbow");
+        String appPackage = ConfigReader.getPropertyOrDefault("app.package", "com.ale.rainbow");
+        if (appPackage.contains("example")) {
+            appPackage = "com.ale.rainbow";
+        }
+        return appPackage;
     }
-
     public static String getWebUrl() {
         return ConfigReader.getPropertyOrDefault("web.url", "https://web.openrainbow.net/login");
     }

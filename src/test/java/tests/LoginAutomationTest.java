@@ -1,6 +1,5 @@
 package tests;
 
-import io.appium.java_client.android.AndroidDriver;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import pages.mobile.DashboardAndroidPage;
@@ -10,7 +9,6 @@ import pages.web.DashboardWebPage;
 import pages.web.WebLoginPage;
 import pages.mobile.MobileLoginPage;
 import utils.JsonReader;
-import utils.ConfigReader;
 
 import java.util.stream.Stream;
 
@@ -43,25 +41,18 @@ public class LoginAutomationTest extends BaseTest {
 
 
     private void resetToLoginPage(String currentPlatform) {
+        if (!"web".equalsIgnoreCase(currentPlatform)) {
+
+            return;
+        }
+
         try {
-            if ("web".equalsIgnoreCase(currentPlatform)) {
-                System.out.println("Wiping browser cache storage nodes...");
-                getDriver().manage().deleteAllCookies();
-                org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) getDriver();
-                js.executeScript("window.localStorage.clear();");
-                js.executeScript("window.sessionStorage.clear();");
-                getDriver().get("https://web.openrainbow.net/app/en-us/login");
-            } else {
-                if (getDriver() instanceof AndroidDriver mobileDriver) {
-                    String appPackage = ConfigReader.getProperty("app.package");
-                    if (appPackage == null || appPackage.contains("example")) {
-                        appPackage = "com.ale.rainbow";
-                    }
-                    System.out.println("Resetting target Android app cache environment for: " + appPackage);
-                    mobileDriver.terminateApp(appPackage);
-                    mobileDriver.activateApp(appPackage);
-                }
-            }
+            System.out.println("Wiping browser cache storage nodes...");
+            getDriver().manage().deleteAllCookies();
+            org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) getDriver();
+            js.executeScript("window.localStorage.clear();");
+            js.executeScript("window.sessionStorage.clear();");
+            getDriver().get("https://web.openrainbow.net/app/en-us/login");
         } catch (Exception e) {
             System.out.println("⚠️ Warning: Non-fatal state context clean bypass: " + e.getMessage());
         }

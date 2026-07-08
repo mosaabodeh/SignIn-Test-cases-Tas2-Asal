@@ -1,6 +1,5 @@
 package pages;
 
-import io.appium.java_client.AppiumBy;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -102,8 +101,5 @@ public class BasePage {
         }
     }
 
-    public String verifyName(String name) {
-        String xpath = String.format("//android.widget.EditText[@text='%s']", name);
-        return driver.findElement(AppiumBy.xpath(xpath)).getText();
-    }
+
 }
