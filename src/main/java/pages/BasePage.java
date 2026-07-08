@@ -51,22 +51,25 @@ public class BasePage {
         } catch (Exception e) {
         }
     }
+    public void waitForStable(org.openqa.selenium.By locator){
+        int maxRetries = 3;
 
-    public void waitUntilStable(WebElement element) {
-        Point lastLocation = null;
-        for (int i = 0; i < 20; i++) {
-            Point currentLocation = element.getLocation();
-            if (currentLocation.equals(lastLocation)) {
-                return;
-            }
-            lastLocation = currentLocation;
+        for (int i = 0; i < maxRetries; i++) {
             try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+                driver.findElement(locator).click();
+
+                org.openqa.selenium.support.ui.WebDriverWait miniWait = new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofMillis(250));
+                miniWait.until(org.openqa.selenium.support.ui.ExpectedConditions.stalenessOf(driver.findElement(locator)));
+
+                System.out.println("🎯 Navigation Success on attempt: " + (i + 1));
+                return;
+            } catch (Exception e) {
+                System.out.println("🔄 Lost click registered, retrying immediate native action... Attempt: " + (i + 2));
             }
         }
     }
+
+
 
     protected WebElement waitForVisibility(By locator) {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
