@@ -20,7 +20,6 @@ public class LoginAutomationTest extends BaseTest {
     private BaseDashboard dashboard;
     private static final String LOGIN_DATA_FILE = "loginData.json";
 
-
     private void startAndPrepareExecutionEnvironment(String currentPlatform) {
         initializeExecutionSession(currentPlatform);
 
@@ -86,16 +85,11 @@ public class LoginAutomationTest extends BaseTest {
 
         Assert.assertTrue(
                 dashboard.verifyUserName("Moodeh Test"),
-                "❌ User name mismatch after login"
-        );
-
+                "❌ User name mismatch after login");
         logout();
     }
 
-
-    @Test(
-            priority = 2,
-            groups = { "web", "android" },
+    @Test(priority = 2, groups = { "web", "android" },
             dataProvider = "multiPlatformProvider",
             description = "Verify that invalid credentials yield appropriate system validation error reactions")
     public void testInvalidCredentialsErrorDisplay(String executionPlatform) throws InterruptedException {
@@ -117,13 +111,9 @@ public class LoginAutomationTest extends BaseTest {
                 "❌ Failsafe: Expected error prompt was not registered by the execution interface. Scraped text: " + actualError);
     }
 
-
-    @Test(
-            priority = 3,
-            groups = { "web", "android" },
+    @Test(priority = 3,groups = { "web", "android" },
             dataProvider = "multiPlatformProvider",
-            description = "Verify empty input configurations trigger identification alerts"
-    )
+            description = "Verify empty input configurations trigger identification alerts")
     public void testInvalidEmptyFieldsScenarioErrorDisplay(String executionPlatform) throws InterruptedException {
         startAndPrepareExecutionEnvironment(executionPlatform);
 

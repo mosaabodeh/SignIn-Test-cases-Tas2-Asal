@@ -50,7 +50,6 @@ public class MobileLoginPage extends BasePage implements BaseLoginPage  {
             return "";
 
         } catch (Exception e) {
-
             System.out.println("⚠️ Mobile OCR error: " + e.getMessage());
             return "";
 

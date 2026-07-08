@@ -58,7 +58,6 @@ public class WebLoginPage extends BasePage implements BaseLoginPage {
             if ("true".equalsIgnoreCase(ariaDisabled)) {
                 return true;
             }
-
             return !button.isEnabled();
 
         } catch (Exception e) {
