@@ -126,10 +126,6 @@ public abstract class BaseTest {
         PLATFORM_THREAD.remove();
     }
 
-    @AfterClass(alwaysRun = true)
-    public void tearDown() {
-        DriverFactory.quitDriver();
-    }
 
     @AfterSuite(alwaysRun = true)
     public void stopAppiumServer() {
