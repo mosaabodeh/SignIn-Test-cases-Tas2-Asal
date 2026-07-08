@@ -25,7 +25,6 @@ public abstract class BaseTest {
 
     private static AppiumDriverLocalService appiumServer;
 
-    // 💡 حقيقةً Thread-Safe: كل خيط يملك نسخته الخاصة من اسم المنصة
     private static final ThreadLocal<String> PLATFORM_THREAD = new ThreadLocal<>();
 
     public WebDriver getDriver() {
@@ -124,7 +123,7 @@ public abstract class BaseTest {
             takeScreenshot(result.getName());
         }
         DriverFactory.quitDriver();
-        PLATFORM_THREAD.remove(); // 💡 يمنع تسرّب المنصة بين الاختبارات لو أعاد الـ Thread Pool استخدام نفس الخيط
+        PLATFORM_THREAD.remove();
     }
 
     @AfterClass(alwaysRun = true)
@@ -146,7 +145,6 @@ public abstract class BaseTest {
         try {
             final File srcFile = ((TakesScreenshot) currentDriver).getScreenshotAs(OutputType.FILE);
             final String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss_SSS").format(new Date());
-            // 💡 أضفنا المنصة لاسم الملف لتفادي تصادم أسماء الصور عند التشغيل المتوازي
             final String filePath = String.format("%s%sscreenhots%s%s_%s_%s.png",
                     System.getProperty("user.dir"), File.separator, File.separator,
                     testName, getPlatform(), timestamp);
