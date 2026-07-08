@@ -68,15 +68,5 @@ public class WebLoginPage extends BasePage implements BaseLoginPage {
     }
 
 
-    private void clickElementSafely(By locator) {
-        WebElement element = waitForClickability(locator);
 
-        try {
-            element.click();
-        } catch (Exception e) {
-            System.out.println("Normal click failed: " + e.getClass().getSimpleName() + " - " + e.getMessage());
-            ((JavascriptExecutor) driver)
-                    .executeScript("arguments[0].click();", element);
-        }
-    }
 }
